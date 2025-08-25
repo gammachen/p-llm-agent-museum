@@ -7,6 +7,12 @@ import logging
 from fastapi import APIRouter, HTTPException
 import httpx
 
+# 导入核心协调智能体
+from agents.orchestrator_agent import OrchestratorAgent
+
+# 创建全局的核心协调智能体实例
+orchestrator_agent = OrchestratorAgent()
+
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -217,167 +223,52 @@ def recognize_sub_intent(message: str, main_intent: str) -> Optional[str]:
 
 @router.post("/orchestrate")
 async def orchestrate_request(request: RequestMessage) -> Dict[str, Any]:
-    """核心协调服务，接收所有请求并路由给合适的专业服务"""
-    logger.info(f"收到请求: user_id={request.user_id}, message={request.message}")
-    
+    """处理协调请求，调用核心协调智能体进行内部agent调度"""
     try:
-        # 1. 识别主意图
-        main_intent = recognize_intent(request.message, request.history)
-        logger.info(f"识别主意图: {main_intent}")
+        # 1. 记录接收到的请求
+        logger.info(f"收到请求: user_id={request.user_id}, message={request.message[:100]}...")
         
-        # 2. 识别子意图（如果有）
-        sub_intent = recognize_sub_intent(request.message, main_intent)
-        logger.info(f"识别子意图: {sub_intent if sub_intent else '无'}")
+        # 2. 构建请求数据，传递给核心协调智能体
+        request_data = {
+            "user_id": request.user_id,
+            "message": request.message,
+            "context": request.context,
+            "history": request.history
+        }
         
-        # 3. 确定目标服务和具体的处理路径
-        if main_intent in SERVICE_ROUTING:
-            target_service = SERVICE_ROUTING[main_intent]
-            
-            # 根据子意图确定具体的API端点
-            specific_path = target_service
-            if sub_intent:
-                # 根据子意图构建更具体的服务路径，确保与实际存在的端点匹配
-                service_paths = {
-                    "booking_info": f"{target_service}/bookings",
-                    "new_booking": f"{target_service}/create",  # 修正为实际存在的create端点
-                    "booking_modify": f"{target_service}/bookings",  # 修正为实际存在的bookings端点
-                    "collection_detail": f"{target_service}/search",  # 使用search而非detail
-                    "collection_search": f"{target_service}/search",
-                    "exhibition_info": f"{target_service}/exhibitions/search",  # 修正为实际存在的端点
-                    "museum_info": f"{target_service}"  # 修正为直接使用qa主端点
+        # 3. 调用核心协调智能体处理请求
+        logger.info(f"调用核心协调智能体处理请求")
+        agent_response = await orchestrator_agent.process_request(request_data)
+        
+        # 4. 处理核心协调智能体返回的结果
+        if agent_response.get("status") == "success":
+            # 成功响应
+            logger.info(f"核心协调智能体处理成功，返回结果")
+            return {
+                "status": "success",
+                "data": {
+                    "orchestration_result": agent_response.get("result", {}),
+                    "agent_info": agent_response.get("agent_info", {})
                 }
-                
-                specific_path = service_paths.get(sub_intent, target_service)
-                logger.info(f"确定具体服务路径: {specific_path}")
-            else:
-                logger.info(f"确定服务路径: {specific_path}")
-            
-            # 准备请求参数，确保格式与目标服务匹配
-            request_params = {
-                "user_id": request.user_id,
-                "query": request.message,
-                "intent": main_intent,
-                "sub_intent": sub_intent,
-                "context": request.context
             }
-            
-            # 根据服务类型调整请求参数格式
-            if specific_path.startswith('/api/public/qa'):
-                # QA服务期望的参数格式
-                request_params = {
-                    "question": request.message,
-                    "context": {"user_id": request.user_id}
-                }
-            elif specific_path.startswith('/api/public/tour-booking'):
-                # 预约服务期望的参数格式
-                if sub_intent in ['new_booking', 'booking_modify']:
-                    request_params = {
-                        "user_id": request.user_id,
-                        "booking_details": {'request': request.message}
-                    }
-                else:
-                    request_params = {
-                        "user_id": request.user_id,
-                        "query": request.message
-                    }
-            
-            # 发送请求到目标服务
-            logger.info(f"向服务发送请求: {specific_path}，参数: {request_params}")
-            service_response = await send_request(specific_path, request_params)
-            
-            # 处理服务响应
-            if service_response.get("status") == "success":
-                # 构建成功响应
-                response_data = {
-                    "status": "success",
-                    "data": {
-                        "intent": main_intent,
-                        "sub_intent": sub_intent,
-                        "target_service": specific_path,
-                        "service_response": service_response.get("data", {})
-                    },
-                    "intent": main_intent,
-                    "sub_intent": sub_intent
-                }
-                
-                return response_data
-            else:
-                # 处理服务返回的错误
-                error_code = service_response.get("code", 500)
-                error_message = service_response.get("message", "服务处理失败")
-                logger.error(f"目标服务返回错误: {error_code}, {error_message}")
-                
-                # 在服务失败的情况下，提供默认回复
-                default_response = {
-                    "status": "error",
-                    "code": error_code,
-                    "message": error_message,
-                    "data": {
-                        "intent": main_intent,
-                        "sub_intent": sub_intent,
-                        "target_service": specific_path,
-                        "fallback_response": True
-                    }
-                }
-                
-                # 根据不同的意图提供不同的默认回退内容
-                if main_intent == "qa":
-                    if sub_intent == "museum_info" or any(keyword in request.message for keyword in ["开放时间", "闭馆"]):
-                        default_response["data"]["content"] = "博物馆开放时间为周二至周日 9:00-17:00（16:30停止入场），周一闭馆（法定节假日除外）。"
-                    elif sub_intent == "exhibition_info" or "展览" in request.message:
-                        default_response["data"]["content"] = "当前展览包括\"古埃及文明展\"和\"中国青铜器特展\"。详细信息可在博物馆官网查看。"
-                    else:
-                        default_response["data"]["content"] = "感谢您的提问。我们已收到您的问题，正在为您准备详细的回答。"
-                elif main_intent == "tour_booking":
-                    default_response["data"]["content"] = "您可以通过博物馆官方网站或微信公众号进行参观预约。预约成功后将收到确认信息。"
-                elif main_intent == "collection" or any(keyword in request.message for keyword in ["藏品", "青铜鼎", "木乃伊"]):
-                    default_response["data"]["content"] = "博物馆藏有丰富的文物和艺术品，您可以通过博物馆APP或官网搜索特定藏品的详细信息。"
-                else:
-                    default_response["data"]["content"] = "感谢您的提问。我们正在处理您的请求，请稍候。"
-                
-                return default_response
         else:
-            # 没有匹配到任何服务，使用general意图的默认服务
-            logger.warning(f"未找到匹配的服务，主意图: {main_intent}，使用默认服务")
-            default_service = SERVICE_ROUTING.get("general", "/api/public/qa")
+            # 处理智能体返回的错误
+            error_code = agent_response.get("code", 500)
+            error_message = agent_response.get("message", "核心协调智能体处理失败")
+            logger.error(f"核心协调智能体返回错误: {error_code}, {error_message}")
             
-            # 构建默认请求参数
-            default_params = {
-                "user_id": request.user_id,
-                "query": request.message,
-                "intent": "general",
-                "context": request.context
+            # 提供默认回退内容
+            return {
+                "status": "error",
+                "code": error_code,
+                "message": error_message,
+                "data": {
+                    "fallback_response": True,
+                    "content": "感谢您的提问。我们正在处理您的请求，请稍候。"
+                }
             }
-            
-            # 发送请求到默认服务
-            service_response = await send_request(default_service, default_params)
-            
-            # 处理响应或提供回退内容
-            if service_response.get("status") == "success":
-                return {
-                    "status": "success",
-                    "data": {
-                        "intent": "general",
-                        "target_service": default_service,
-                        "service_response": service_response.get("data", {})
-                    },
-                    "intent": "general"
-                }
-            else:
-                # 提供默认回退内容
-                return {
-                    "status": "error",
-                    "code": service_response.get("code", 500),
-                    "message": service_response.get("message", "服务处理失败"),
-                    "data": {
-                        "intent": "general",
-                        "target_service": default_service,
-                        "fallback_response": True,
-                        "content": "感谢您的提问。我们已收到您的问题，正在为您准备详细的回答。"
-                    }
-                }
     except Exception as e:
-        logger.error(f"处理请求时发生错误: {str(e)}")
+        logger.error(f"调用核心协调智能体时发生错误: {str(e)}")
         # 避免直接向用户暴露内部错误信息
         return {
             "status": "error",

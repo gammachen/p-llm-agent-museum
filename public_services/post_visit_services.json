@@ -1,0 +1,109 @@
+{
+  "membership": {
+    "members": [
+      {
+        "member_id": "MEM2025001",
+        "name": "张三",
+        "phone": "13800138000",
+        "email": "zhangsan@example.com",
+        "membership_level": "黄金会员",
+        "join_date": "2025-01-15",
+        "expire_date": "2026-01-15",
+        "points": 3500,
+        "last_visit_date": "2025-08-25",
+        "interests": ["古埃及文明", "青铜器", "书法"]
+      },
+      {
+        "member_id": "MEM2025002",
+        "name": "李四",
+        "phone": "13900139000",
+        "email": "lisi@example.com",
+        "membership_level": "白银会员",
+        "join_date": "2025-03-20",
+        "expire_date": "2026-03-20",
+        "points": 1800,
+        "last_visit_date": "2025-08-20",
+        "interests": ["现代艺术", "摄影"]
+      }
+    ],
+    "membership_levels": [
+      {"level": "普通会员", "benefits": ["免费参观基本展览", "会员通讯"]},
+      {"level": "白银会员", "benefits": ["免费参观基本展览", "特展优惠", "会员活动优先预约", "会员通讯"]},
+      {"level": "黄金会员", "benefits": ["免费参观所有展览", "特展优先参观", "会员活动免费参与", "专属导览服务", "会员通讯", "礼品店折扣"]}
+    ]
+  },
+  "community": {
+    "posts": [
+      {
+        "post_id": "POST20250825001",
+        "title": "古埃及特展观后感",
+        "content": "今天参观了古埃及特展，看到了很多珍贵的文物，尤其是木乃伊，太震撼了！",
+        "author_id": "MEM2025001",
+        "author_name": "张三",
+        "create_time": "2025-08-25T16:30:00Z",
+        "likes": 45,
+        "comments": 12,
+        "status": "正常"
+      },
+      {
+        "post_id": "POST20250824001",
+        "title": "现代艺术展中的互动装置体验",
+        "content": "北馆3楼的现代艺术展中的互动装置很有趣，大家可以去体验一下！",
+        "author_id": "MEM2025002",
+        "author_name": "李四",
+        "create_time": "2025-08-24T15:45:00Z",
+        "likes": 32,
+        "comments": 8,
+        "status": "正常"
+      }
+    ],
+    "events": [
+      {
+        "event_id": "EVENT20250910",
+        "title": "会员专属讲座：博物馆里的奇妙夜",
+        "description": "专为会员举办的夜间参观活动，包括专场讲解和互动体验。",
+        "date": "2025-09-10",
+        "time": "19:00-21:00",
+        "location": "南馆",
+        "max_participants": 50,
+        "current_participants": 38,
+        "status": "报名中"
+      }
+    ]
+  },
+  "analytics": {
+    "visitor_statistics": {
+      "date": "2025-08-25",
+      "total_visitors": 1250,
+      "peak_hour": "10:00-11:00",
+      "peak_visitors": 320,
+      "average_stay_time": 125,
+      "visitor_source": [
+        {"source": "线上预约", "percentage": 65},
+        {"source": "现场购票", "percentage": 25},
+        {"source": "团体预约", "percentage": 10}
+      ],
+      "age_distribution": [
+        {"age_group": "0-18岁", "percentage": 15},
+        {"age_group": "19-35岁", "percentage": 35},
+        {"age_group": "36-55岁", "percentage": 30},
+        {"age_group": "56岁以上", "percentage": 20}
+      ]
+    },
+    "exhibit_popularity": [
+      {"exhibit_id": "E002", "name": "古埃及木乃伊", "visitors": 850, "popularity_score": 9.5},
+      {"exhibit_id": "E001", "name": "青铜鼎", "visitors": 780, "popularity_score": 9.2},
+      {"exhibit_id": "E003", "name": "现代艺术装置", "visitors": 620, "popularity_score": 8.7},
+      {"exhibit_id": "E010", "name": "王羲之书法", "visitors": 450, "popularity_score": 8.5}
+    ],
+    "visit_path_analysis": [
+      {"path_id": "PATH001", "path_sequence": ["入口", "南馆1楼", "北馆2楼", "东馆3楼", "出口"], "percentage": 45},
+      {"path_id": "PATH002", "path_sequence": ["入口", "北馆2楼", "北馆3楼", "西馆2楼", "出口"], "percentage": 30},
+      {"path_id": "PATH003", "path_sequence": ["入口", "南馆1楼", "南馆2楼", "西馆1楼", "出口"], "percentage": 25}
+    ]
+  },
+  "visit_reviews": [
+    {"review_id": "REV20250825001", "visitor_id": "VIS20250825001", "visitor_name": "张三", "visit_date": "2025-08-25", "rating": 5, "content": "博物馆的展览非常精彩，导览服务也很专业，下次还会再来！", "recommended_exhibits": ["E001", "E002"], "status": "已审核"},
+    {"review_id": "REV20250825002", "visitor_id": "VIS20250825002", "visitor_name": "李四", "visit_date": "2025-08-25", "rating": 4, "content": "展览内容丰富，但部分展厅空调温度较高，希望能改进。", "recommended_exhibits": ["E003", "E015"], "status": "已审核"}
+  ]
+}

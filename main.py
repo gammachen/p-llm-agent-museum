@@ -25,4 +25,11 @@ def read_root():
     }
 
 # Import and include routers
-# Will be added in subsequent steps
+from services.core_orchestrator import router as core_router
+from services.public_services import router as public_router
+from services.internal_services import router as internal_router
+
+# Register routers
+app.include_router(core_router)
+app.include_router(public_router)
+app.include_router(internal_router)

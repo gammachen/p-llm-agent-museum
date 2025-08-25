@@ -1,0 +1,46 @@
+{
+  "surveillance": {
+    "cameras": [
+      {"camera_id": "CAM2025001", "name": "南馆入口", "location": "南馆大门", "status": "正常", "last_check": "2025-08-25T08:00:00Z", "view_url": "/surveillance/cam2025001"},
+      {"camera_id": "CAM2025002", "name": "北馆展厅", "location": "北馆2楼", "status": "正常", "last_check": "2025-08-25T08:00:00Z", "view_url": "/surveillance/cam2025002"},
+      {"camera_id": "CAM2025003", "name": "文物库房", "location": "地下一层", "status": "正常", "last_check": "2025-08-25T08:00:00Z", "view_url": "/surveillance/cam2025003"},
+      {"camera_id": "CAM2025004", "name": "展厅A", "location": "南馆3楼", "status": "异常", "last_check": "2025-08-25T08:00:00Z", "view_url": "/surveillance/cam2025004", "issue": "画面模糊"}
+    ],
+    "incidents": [
+      {"incident_id": "INC20250825001", "camera_id": "CAM2025002", "location": "北馆2楼", "type": "可疑人员", "description": "发现一名可疑人员在展品前徘徊超过15分钟", "time": "2025-08-25T10:15:00Z", "status": "已处理", "handling_officer": "张安保", "action_taken": "上前询问，确认是游客在认真观看展品"},
+      {"incident_id": "INC20250825002", "camera_id": "CAM2025003", "location": "地下一层", "type": "门禁异常", "description": "文物库房门禁在非工作时间被触发", "time": "2025-08-25T14:30:00Z", "status": "处理中", "handling_officer": "李安保", "action_taken": "正在前往现场查看"}
+    ],
+    "detection_configs": {
+      "motion_detection": {"enabled": true, "sensitivity": "中"},
+      "intrusion_detection": {"enabled": true, "zones": ["文物库房", "展品区"]},
+      "abnormal_behavior": {"enabled": true, "types": ["奔跑", "聚集", "长时间停留"]}
+    }
+  },
+  "emergency_response": {
+    "emergency_plans": [
+      {"plan_id": "PLAN2025001", "type": "火灾", "name": "火灾应急预案", "version": "1.0", "last_updated": "2025-01-15", "content": "1. 发现火情立即报警并启动消防设施；2. 组织游客疏散；3. 抢救重要文物；4. 配合消防部门灭火。"},
+      {"plan_id": "PLAN2025002", "type": "医疗急救", "name": "医疗急救预案", "version": "1.0", "last_updated": "2025-01-15", "content": "1. 发现有人突发疾病立即拨打120；2. 组织现场急救；3. 开辟绿色通道；4. 通知家属。"},
+      {"plan_id": "PLAN2025003", "type": "安全威胁", "name": "安全威胁应急预案", "version": "1.0", "last_updated": "2025-01-15", "content": "1. 发现安全威胁立即报警；2. 启动应急广播；3. 组织游客疏散；4. 配合警方处置。"}
+    ],
+    "drills": [
+      {"drill_id": "DRILL2025001", "type": "火灾", "date": "2025-06-15", "time": "10:00-11:00", "participants": 50, "location": "南馆", "result": "良好", "notes": "疏散速度达标，消防设施正常"},
+      {"drill_id": "DRILL2025002", "type": "医疗急救", "date": "2025-07-20", "time": "14:00-15:00", "participants": 30, "location": "北馆", "result": "良好", "notes": "急救流程熟练，反应迅速"}
+    ],
+    "emergency_contacts": [
+      {"name": "王经理", "position": "安保主管", "phone": "13800138001", "email": "wang@example.com"},
+      {"name": "张医生", "position": "校医", "phone": "13900139001", "email": "zhang@example.com"},
+      {"name": "李队长", "position": "消防队长", "phone": "13700137001", "email": "li@example.com"}
+    ]
+  },
+  "patrol": {
+    "routes": [
+      {"route_id": "ROUTE2025001", "name": "白天巡逻路线", "description": "覆盖主要展厅和公共区域", "checkpoints": ["南馆入口", "北馆展厅", "东馆楼梯间", "西馆出口"], "frequency": "每小时一次"},
+      {"route_id": "ROUTE2025002", "name": "夜间巡逻路线", "description": "覆盖文物库房和重要区域", "checkpoints": ["文物库房", "监控室", "消防控制室", "北馆后门"], "frequency": "每两小时一次"}
+    ],
+    "records": [
+      {"record_id": "RECORD20250825001", "route_id": "ROUTE2025001", "patrol_officer": "张安保", "start_time": "2025-08-25T09:00:00Z", "end_time": "2025-08-25T09:30:00Z", "status": "正常", "notes": "一切正常"},
+      {"record_id": "RECORD20250825002", "route_id": "ROUTE2025001", "patrol_officer": "李安保", "start_time": "2025-08-25T10:00:00Z", "end_time": "2025-08-25T10:30:00Z", "status": "正常", "notes": "一切正常"},
+      {"record_id": "RECORD20250824001", "route_id": "ROUTE2025002", "patrol_officer": "王安保", "start_time": "2025-08-24T22:00:00Z", "end_time": "2025-08-24T22:30:00Z", "status": "异常", "notes": "文物库房门锁异常，已报修"}
+    ]
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "collections": [
+    {
+      "collection_id": "COL2025001",
+      "name": "青铜鼎",
+      "category": "青铜器",
+      "period": "商代晚期",
+      "origin": "河南安阳",
+      "acquisition_date": "1959-03-15",
+      "acquisition_method": "考古发掘",
+      "condition": "良好",
+      "dimensions": {
+        "height": 133,
+        "diameter": 79,
+        "weight": 832.84
+      },
+      "description": "这件青铜鼎是商代晚期的代表性作品，纹饰精美，铸造工艺精湛，是我国现已发现的最重的青铜器。",
+      "current_location": "南馆1楼展厅",
+      "exhibition_status": "展出中",
+      "digital_assets": [
+        {"type": "图片", "url": "/assets/collections/bronze_ding/photo1.jpg"},
+        {"type": "3D模型", "url": "/assets/collections/bronze_ding/3d_model.obj"},
+        {"type": "文献资料", "url": "/assets/collections/bronze_ding/document.pdf"}
+      ],
+      "conservation_history": [
+        {"date": "2005-06-10", "action": "清洁与修复", "notes": "对表面进行了专业清洁，修复了微小裂纹"}
+      ]
+    },
+    {
+      "collection_id": "COL2025002",
+      "name": "古埃及木乃伊",
+      "category": "人体遗存",
+      "period": "公元前1323年",
+      "origin": "埃及帝王谷",
+      "acquisition_date": "1922-11-26",
+      "acquisition_method": "考古发掘",
+      "condition": "一般",
+      "dimensions": {
+        "height": 170,
+        "weight": 50
+      },
+      "description": "这具木乃伊是古埃及第18王朝法老图坦卡蒙的遗体，距今已有3000多年历史。",
+      "current_location": "北馆2楼展厅",
+      "exhibition_status": "展出中",
+      "digital_assets": [
+        {"type": "图片", "url": "/assets/collections/mummy/photo1.jpg"},
+        {"type": "CT扫描图", "url": "/assets/collections/mummy/ct_scan.jpg"},
+        {"type": "文献资料", "url": "/assets/collections/mummy/document.pdf"}
+      ],
+      "conservation_history": [
+        {"date": "2010-09-15", "action": "环境控制调整", "notes": "优化了展示柜的温湿度控制参数"}
+      ]
+    }
+  ],
+  "environment_monitoring": {
+    "locations": [
+      {
+        "location_id": "LOC2025001",
+        "name": "南馆1楼展厅",
+        "sensors": [
+          {"sensor_id": "SEN2025001", "type": "温度", "value": 22.5, "unit": "°C", "status": "正常", "last_update": "2025-08-25T16:00:00Z"},
+          {"sensor_id": "SEN2025002", "type": "湿度", "value": 55, "unit": "%", "status": "正常", "last_update": "2025-08-25T16:00:00Z"},
+          {"sensor_id": "SEN2025003", "type": "光照", "value": 150, "unit": "lux", "status": "正常", "last_update": "2025-08-25T16:00:00Z"}
+        ],
+        "alerts": []
+      },
+      {
+        "location_id": "LOC2025002",
+        "name": "北馆2楼展厅",
+        "sensors": [
+          {"sensor_id": "SEN2025004", "type": "温度", "value": 23.2, "unit": "°C", "status": "正常", "last_update": "2025-08-25T16:00:00Z"},
+          {"sensor_id": "SEN2025005", "type": "湿度", "value": 52, "unit": "%", "status": "正常", "last_update": "2025-08-25T16:00:00Z"},
+          {"sensor_id": "SEN2025006", "type": "光照", "value": 120, "unit": "lux", "status": "正常", "last_update": "2025-08-25T16:00:00Z"}
+        ],
+        "alerts": []
+      },
+      {
+        "location_id": "LOC2025003",
+        "name": "文物库房A",
+        "sensors": [
+          {"sensor_id": "SEN2025007", "type": "温度", "value": 20.1, "unit": "°C", "status": "正常", "last_update": "2025-08-25T16:00:00Z"},
+          {"sensor_id": "SEN2025008", "type": "湿度", "value": 48, "unit": "%", "status": "正常", "last_update": "2025-08-25T16:00:00Z"},
+          {"sensor_id": "SEN2025009", "type": "氧气", "value": 5, "unit": "%", "status": "正常", "last_update": "2025-08-25T16:00:00Z"}
+        ],
+        "alerts": []
+      },
+      {
+        "location_id": "LOC2025004",
+        "name": "展厅A",
+        "sensors": [
+          {"sensor_id": "SEN2025010", "type": "温度", "value": 26.8, "unit": "°C", "status": "异常", "last_update": "2025-08-25T16:00:00Z"},
+          {"sensor_id": "SEN2025011", "type": "湿度", "value": 40, "unit": "%", "status": "正常", "last_update": "2025-08-25T16:00:00Z"}
+        ],
+        "alerts": [
+          {"alert_id": "ALT20250825001", "type": "温度过高", "severity": "中", "message": "展厅A温度26.8°C，超过阈值25°C", "time": "2025-08-25T15:30:00Z", "status": "未处理"}
+        ]
+      }
+    ]
+  },
+  "loan_requests": [
+    {
+      "request_id": "LOAN2025001",
+      "collection_id": "COL2025001",
+      "collection_name": "青铜鼎",
+      "borrowing_institution": "故宫博物院",
+      "contact_person": "赵老师",
+      "contact_phone": "010-12345678",
+      "purpose": "联合展览",
+      "start_date": "2025-10-01",
+      "end_date": "2025-12-31",
+      "status": "审批中",
+      "review_comments": [],
+      "insurance_info": {
+        "company": "中国人民保险公司",
+        "policy_number": "P2025001",
+        "amount": 5000000,
+        "start_date": "2025-09-25",
+        "end_date": "2026-01-10"
+      },
+      "transportation_plan": {
+        "method": "专车运输",
+        "route": "从本地博物馆到故宫博物院",
+        "date": "2025-09-28",
+        "responsible_person": "李师傅",
+        "contact_phone": "13800138001"
+      }
+    }
+  ]
+}

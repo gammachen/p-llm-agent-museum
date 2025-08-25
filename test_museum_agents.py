@@ -27,7 +27,11 @@ class MuseumAgentSystem:
         try:
             # 尝试调用一个简单的API来检查服务状态
             result = execute_museum_service(endpoint="/")
-            if result.get("status") == "success":
+            # 检查result是ToolResponse类型，需要获取其metadata属性
+            if hasattr(result, 'metadata'):
+                result = result.metadata
+            # 根路由返回结构不包含status字段，检查是否包含预期的字段
+            if result.get("status") == "success" or ("message" in result and "endpoints" in result):
                 print("博物馆服务已成功启动！")
             else:
                 print("警告：博物馆服务可能未正常启动。请确保已运行 './start_service.sh'")

@@ -54,7 +54,8 @@ SERVICE_ROUTING = {
 SIMPLE_PATH_REDIRECTS = {
     "/booking": "/api/public/tour-booking/bookings",
     "/hours": "/api/public/qa",
-    "/collections": "/api/internal/collection/list"
+    "/collections": "/api/internal/collection/list",
+    "/search/collections": "/api/internal/collection/search"
 }
 
 @router.post("/orchestrate")

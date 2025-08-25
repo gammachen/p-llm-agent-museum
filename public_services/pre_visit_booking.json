@@ -1,0 +1,57 @@
+{
+  "bookings": [
+    {
+      "booking_id": "BK20250825001",
+      "visitor_name": "张三",
+      "visitor_phone": "13800138000",
+      "visit_date": "2025-08-26",
+      "visit_time": "09:30-11:30",
+      "ticket_type": "成人票",
+      "ticket_count": 2,
+      "status": "已预约",
+      "created_at": "2025-08-25T10:15:30Z"
+    },
+    {
+      "booking_id": "BK20250825002",
+      "visitor_name": "李四",
+      "visitor_phone": "13900139000",
+      "visit_date": "2025-08-26",
+      "visit_time": "14:00-16:00",
+      "ticket_type": "学生票",
+      "ticket_count": 1,
+      "status": "已预约",
+      "created_at": "2025-08-25T11:20:45Z"
+    },
+    {
+      "booking_id": "BK20250825003",
+      "visitor_name": "王五",
+      "visitor_phone": "13700137000",
+      "visit_date": "2025-08-27",
+      "visit_time": "10:00-12:00",
+      "ticket_type": "团体票",
+      "ticket_count": 10,
+      "status": "已确认",
+      "created_at": "2025-08-25T14:30:15Z"
+    }
+  ],
+  "available_slots": [
+    {
+      "date": "2025-08-26",
+      "time_slots": [
+        {"time": "09:00-11:00", "available": 45},
+        {"time": "11:00-13:00", "available": 30},
+        {"time": "13:00-15:00", "available": 50},
+        {"time": "15:00-17:00", "available": 25}
+      ]
+    },
+    {
+      "date": "2025-08-27",
+      "time_slots": [
+        {"time": "09:00-11:00", "available": 50},
+        {"time": "11:00-13:00", "available": 50},
+        {"time": "13:00-15:00", "available": 50},
+        {"time": "15:00-17:00", "available": 50}
+      ]
+    }
+  ]
+}

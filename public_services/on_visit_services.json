@@ -1,0 +1,77 @@
+{
+  "personalized_tours": [
+    {
+      "tour_id": "TOUR20250825001",
+      "visitor_id": "VIS20250825001",
+      "visitor_name": "张三",
+      "interests": ["古埃及文明", "青铜器", "书法"],
+      "duration": 120,
+      "recommended_route": [
+        {"exhibit_id": "E001", "name": "青铜鼎", "location": "南馆1楼", "duration": 15},
+        {"exhibit_id": "E005", "name": "甲骨文", "location": "南馆1楼", "duration": 10},
+        {"exhibit_id": "E002", "name": "古埃及木乃伊", "location": "北馆2楼", "duration": 20},
+        {"exhibit_id": "E010", "name": "王羲之书法", "location": "东馆3楼", "duration": 15}
+      ],
+      "current_position": {"exhibit_id": "E005", "location": "南馆1楼"},
+      "status": "进行中"
+    },
+    {
+      "tour_id": "TOUR20250825002",
+      "visitor_id": "VIS20250825002",
+      "visitor_name": "李四",
+      "interests": ["现代艺术", "摄影"],
+      "duration": 90,
+      "recommended_route": [
+        {"exhibit_id": "E003", "name": "现代艺术装置", "location": "北馆3楼", "duration": 20},
+        {"exhibit_id": "E015", "name": "当代摄影展", "location": "北馆4楼", "duration": 25},
+        {"exhibit_id": "E020", "name": "数字艺术互动", "location": "西馆2楼", "duration": 20}
+      ],
+      "current_position": {"exhibit_id": "E015", "location": "北馆4楼"},
+      "status": "进行中"
+    }
+  ],
+  "exhibit_knowledge": {
+    "E001": {
+      "name": "青铜鼎",
+      "period": "商代晚期",
+      "discovery_location": "河南安阳",
+      "description": "这件青铜鼎是商代晚期的代表性作品，高133厘米，重832.84公斤，纹饰精美，铸造工艺精湛，是我国现已发现的最重的青铜器。",
+      "historical_significance": "它反映了商代晚期青铜铸造的最高水平，也是研究商代社会、经济、文化的重要实物资料。",
+      "frequently_asked_questions": [
+        {"question": "这个青铜鼎是做什么用的？", "answer": "主要用于祭祀活动，是权力和地位的象征。"},
+        {"question": "它是怎么铸造的？", "answer": "采用分铸法铸造，先铸鼎身，再铸鼎耳，最后铸鼎足，体现了高超的铸造工艺。"}
+      ]
+    },
+    "E002": {
+      "name": "古埃及木乃伊",
+      "period": "公元前1323年",
+      "discovery_location": "埃及帝王谷",
+      "description": "这具木乃伊是古埃及第18王朝法老图坦卡蒙的遗体，距今已有3000多年历史。",
+      "historical_significance": "它是古埃及文明的重要见证，为研究古埃及的丧葬习俗、医学水平等提供了宝贵资料。",
+      "frequently_asked_questions": [
+        {"question": "木乃伊是如何制作的？", "answer": "经过脱水、防腐、包裹等多道工序，整个过程约需70天。"},
+        {"question": "为什么要制作木乃伊？", "answer": "古埃及人相信人死后灵魂会依附于遗体，制作木乃伊是为了保存遗体，让灵魂得以永生。"}
+      ]
+    }
+  },
+  "facility_services": {
+    "lost_and_found": [
+      {"item_id": "LF20250825001", "description": "黑色皮质钱包", "found_location": "南馆1楼大厅", "found_time": "2025-08-25T10:30:00Z", "status": "待认领"},
+      {"item_id": "LF20250825002", "description": "儿童粉色水壶", "found_location": "北馆2楼展厅", "found_time": "2025-08-25T11:45:00Z", "status": "待认领"}
+    ],
+    "location_info": {
+      "restrooms": ["南馆1楼", "北馆2楼", "东馆3楼", "西馆1楼"],
+      "nursing_rooms": ["南馆2楼", "北馆3楼"],
+      "cafeterias": ["南馆1楼", "西馆2楼"],
+      "gift_shops": ["南馆出口", "北馆出口"]
+    },
+    "dining_reservation": [
+      {"reservation_id": "DR20250825001", "visitor_name": "张三", "phone": "13800138000", "time": "12:00", "seats": 2, "status": "已确认", "location": "南馆1楼餐厅"},
+      {"reservation_id": "DR20250825002", "visitor_name": "王五", "phone": "13700137000", "time": "13:30", "seats": 10, "status": "已确认", "location": "西馆2楼餐厅"}
+    ]
+  },
+  "feedback": [
+    {"feedback_id": "FB20250825001", "visitor_name": "赵六", "phone": "13600136000", "content": "展厅A太热了，希望能调整空调温度。", "type": "投诉", "emotion_analysis": "负面", "create_time": "2025-08-25T14:20:00Z", "status": "处理中", "assigned_to": "设施管理部门"},
+    {"feedback_id": "FB20250825002", "visitor_name": "钱七", "phone": "13500135000", "content": "博物馆的展览非常精彩，讲解员专业知识丰富，体验很好！", "type": "建议", "emotion_analysis": "正面", "create_time": "2025-08-25T15:10:00Z", "status": "已处理", "assigned_to": "游客服务部门"}
+  ]
+}

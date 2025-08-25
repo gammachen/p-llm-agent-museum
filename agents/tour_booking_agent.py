@@ -4,11 +4,7 @@ from agentscope.formatter import OllamaChatFormatter
 from agentscope.memory import InMemoryMemory
 from agentscope.model import OllamaChatModel
 from agentscope.tool import Toolkit
-from utils.agent_tools import (
-    get_museum_booking_info,
-    create_museum_booking,
-    execute_museum_service
-)
+from utils.agent_tools import MuseumToolkit
 from agentscope.message import Msg
 
 class TourBookingAgent(ReActAgent):
@@ -17,9 +13,10 @@ class TourBookingAgent(ReActAgent):
     def __init__(self):
         # 初始化工具集
         toolkit = Toolkit()
-        toolkit.register_tool_function(get_museum_booking_info)
-        toolkit.register_tool_function(create_museum_booking)
-        toolkit.register_tool_function(execute_museum_service)
+        # 注册MuseumToolkit的方法作为工具
+        toolkit.register_tool_function(MuseumToolkit.get_booking_info)
+        toolkit.register_tool_function(MuseumToolkit.create_booking)
+        toolkit.register_tool_function(MuseumToolkit.call_service)
         
         model = OllamaChatModel(
             model_name="qwen2:latest",
@@ -45,16 +42,17 @@ class TourBookingAgent(ReActAgent):
         user_id = x.name if isinstance(x, Msg) else "anonymous"
         
         # 分析用户意图
-        # 注意：formatter.format() 期望接收 Msg 对象的列表
+        # 确保每个Msg对象都使用正确的初始化方式（包含name、role和content属性）
         content = [
-            Msg(role="system", content="你是博物馆的导览与预约助手，负责处理门票预约、团队预约，并为用户生成个性化参观路线。"),
-            Msg(role="user", content=user_message)
+            Msg(name="system", role="system", content="你是博物馆的导览与预约助手，负责处理门票预约、团队预约，并为用户生成个性化参观路线。"),
+            Msg(name=user_id, role="user", content=user_message)
         ]
         
         # 使用模型理解用户意图
         model_input = await self.formatter.format(content)
         response = await self.model(model_input)
-        model_output = self.formatter.parse(response)
+        
+        # OllamaChatFormatter没有parse方法，直接使用response
         
         # 根据用户意图调用不同的功能
         if any(keyword in user_message for keyword in ["预约", "订票", "门票"]):
@@ -88,19 +86,22 @@ class TourBookingAgent(ReActAgent):
             "ticket_count": 1  # 默认值，实际应用中应从用户输入提取
         }
         
-        # 调用服务创建预约
-        result = create_museum_booking(booking_data)
-        
-        if result.get("status") == "success":
-            booking_info = result.get("data", {})
-            return f"预约成功！您的预约编号是{booking_info.get('booking_id', '')}，\n" \
-                   f"预约日期：{booking_info.get('visit_date', '')}\n" \
-                   f"预约时间：{booking_info.get('visit_time', '')}\n" \
-                   f"票种：{booking_info.get('ticket_type', '')}\n" \
-                   f"数量：{booking_info.get('ticket_count', '')}张\n" \
-                   f"请在参观当天凭预约信息到博物馆入口处核销。"
-        else:
-            return f"预约失败：{result.get('message', '未知错误')}"
+        try:
+            # 直接调用MuseumToolkit的方法
+            result = MuseumToolkit.create_booking(booking_data)
+            
+            if result.get("status") == "success":
+                booking_info = result.get("data", {})
+                return f"预约成功！您的预约编号是{booking_info.get('booking_id', '')}，\n" \
+                       f"预约日期：{booking_info.get('visit_date', '')}\n" \
+                       f"预约时间：{booking_info.get('visit_time', '')}\n" \
+                       f"票种：{booking_info.get('ticket_type', '')}\n" \
+                       f"数量：{booking_info.get('ticket_count', '')}张\n" \
+                       f"请在参观当天凭预约信息到博物馆入口处核销。"
+            else:
+                return f"预约失败：{result.get('message', '未知错误')}"
+        except Exception as e:
+            return f"处理预约请求时发生错误：{str(e)}"
     
     async def _generate_route(self, user_message: str) -> str:
         """生成个性化参观路线"""
@@ -117,41 +118,48 @@ class TourBookingAgent(ReActAgent):
         # 模拟从用户消息中提取手机号
         phone = "13800138000"  # 默认值，实际应用中应从用户输入提取
         
-        # 调用服务查询预约
-        result = get_museum_booking_info(phone)
-        
-        if result.get("status") == "success":
-            bookings = result.get("data", [])
-            if not bookings:
-                return "未找到您的预约记录，请确认手机号是否正确。"
+        try:
+            # 直接调用MuseumToolkit的方法
+            result = MuseumToolkit.get_booking_info(phone)
             
-            response = "您的预约记录：\n"
-            for booking in bookings:
-                response += f"- 预约编号：{booking.get('booking_id', '')}\n" \
-                          f"  预约日期：{booking.get('visit_date', '')}\n" \
-                          f"  预约时间：{booking.get('visit_time', '')}\n" \
-                          f"  状态：{booking.get('status', '')}\n"
-            return response
-        else:
-            return f"查询失败：{result.get('message', '未知错误')}"
+            if result.get("status") == "success":
+                bookings = result.get("data", [])
+                if not bookings:
+                    return "未找到您的预约记录，请确认手机号是否正确。"
+                
+                response = "您的预约记录：\n"
+                for booking in bookings:
+                    response += f"- 预约编号：{booking.get('booking_id', '')}\n" \
+                              f"  预约日期：{booking.get('visit_date', '')}\n" \
+                              f"  预约时间：{booking.get('visit_time', '')}\n" \
+                              f"  状态：{booking.get('status', '')}\n"
+                return response
+            else:
+                return f"查询失败：{result.get('message', '未知错误')}"
+        except Exception as e:
+            return f"查询预约信息时发生错误：{str(e)}"
     
     async def _get_available_slots(self, user_message: str) -> str:
         """获取可用时段"""
-        # 调用服务获取可用时段
-        result = execute_museum_service(
-            endpoint="/api/public/tour-booking/available-slots"
-        )
-        
-        if result.get("status") == "success":
-            slots = result.get("data", [])
-            if not slots:
-                return "暂无可用预约时段。"
+        try:
+            # 直接调用MuseumToolkit的方法
+            result = MuseumToolkit.call_service(
+                endpoint="/api/public/tour-booking/available-slots",
+                method="GET"
+            )
             
-            response = "近期可用的预约时段：\n"
-            for slot in slots[:2]:  # 只显示最近两天的
-                response += f"日期：{slot.get('date', '')}\n"
-                for time_slot in slot.get('time_slots', [])[:3]:  # 只显示前3个时段
-                    response += f"  - {time_slot.get('time', '')}（剩余{time_slot.get('available', '')}个名额）\n"
-            return response
-        else:
-            return f"获取失败：{result.get('message', '未知错误')}"
+            if result.get("status") == "success":
+                slots = result.get("data", [])
+                if not slots:
+                    return "暂无可用预约时段。"
+                
+                response = "近期可用的预约时段：\n"
+                for slot in slots[:2]:  # 只显示最近两天的
+                    response += f"日期：{slot.get('date', '')}\n"
+                    for time_slot in slot.get('time_slots', [])[:3]:  # 只显示前3个时段
+                        response += f"  - {time_slot.get('time', '')}（剩余{time_slot.get('available', '')}个名额）\n"
+                return response
+            else:
+                return f"获取失败：{result.get('message', '未知错误')}"
+        except Exception as e:
+            return f"获取可用时段时发生错误：{str(e)}"

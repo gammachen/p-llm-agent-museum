@@ -1,0 +1,80 @@
+{
+  "exhibitions": [
+    {
+      "exhibition_id": "EX20250901",
+      "title": "古埃及文明特展",
+      "subtitle": "法老的秘密",
+      "description": "本次特展将展出超过100件古埃及文物，包括木乃伊、黄金面具、石碑等珍贵展品，带您探索古埃及文明的神秘面纱。",
+      "start_date": "2025-09-01",
+      "end_date": "2025-12-31",
+      "location": "南馆1楼特展厅",
+      "ticket_info": "需单独购票，成人票80元/人，学生票40元/人",
+      "image_url": "/images/exhibitions/egypt.jpg",
+      "status": "即将开展"
+    },
+    {
+      "exhibition_id": "EX20250715",
+      "title": "现代艺术展",
+      "subtitle": "跨界与融合",
+      "description": "展览汇集了国内外知名现代艺术家的作品，展现当代艺术的多元表达和创新探索。",
+      "start_date": "2025-07-15",
+      "end_date": "2025-08-30",
+      "location": "北馆2楼展厅",
+      "ticket_info": "包含在普通门票内，无需额外购票",
+      "image_url": "/images/exhibitions/modern_art.jpg",
+      "status": "进行中"
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "AC20250826",
+      "title": "亲子手工坊：文物复刻",
+      "description": "适合6-12岁儿童参与的互动活动，在专业老师指导下制作简易文物复制品，了解文物修复知识。",
+      "date": "2025-08-26",
+      "time": "10:00-12:00",
+      "location": "教育中心",
+      "max_participants": 20,
+      "current_participants": 15,
+      "registration_fee": "免费",
+      "requirements": "需提前预约，儿童需由成人陪同"
+    },
+    {
+      "activity_id": "AC20250828",
+      "title": "学术讲座：博物馆数字化的未来",
+      "description": "邀请业内专家探讨博物馆数字化转型的趋势、挑战与机遇。",
+      "date": "2025-08-28",
+      "time": "14:00-16:00",
+      "location": "学术报告厅",
+      "max_participants": 100,
+      "current_participants": 78,
+      "registration_fee": "免费",
+      "requirements": "需提前预约"
+    }
+  ],
+  "notices": [
+    {
+      "notice_id": "NT20250825",
+      "title": "关于8月30日闭馆的通知",
+      "content": "因设备维护，我馆将于2025年8月30日（周六）全天闭馆，给您带来不便敬请谅解。",
+      "发布时间": "2025-08-25T09:00:00Z",
+      "expire_time": "2025-08-30T23:59:59Z",
+      "priority": "高"
+    },
+    {
+      "notice_id": "NT20250820",
+      "title": "暑期开放时间调整",
+      "content": "自2025年7月1日至8月31日，我馆开放时间调整为8:30-18:00（17:30停止入场）。",
+      "发布时间": "2025-06-25T10:00:00Z",
+      "expire_time": "2025-08-31T23:59:59Z",
+      "priority": "中"
+    }
+  ],
+  "queue_status": {
+    "timestamp": "2025-08-25T15:30:00Z",
+    "exhibits": [
+      {"exhibit_id": "E001", "name": "镇馆之宝：青铜鼎", "wait_time": "30分钟", "crowd_level": "较多"},
+      {"exhibit_id": "E002", "name": "古埃及木乃伊", "wait_time": "45分钟", "crowd_level": "拥挤"},
+      {"exhibit_id": "E003", "name": "现代艺术装置", "wait_time": "10分钟", "crowd_level": "较少"}
+    ]
+  }
+}

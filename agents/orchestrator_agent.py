@@ -17,6 +17,11 @@ from utils.agent_tools import (
     submit_museum_feedback
 )
 
+# 导入所有专业智能体
+from agents.tour_booking_agent import TourBookingAgent
+from agents.qa_agent import QAAgent
+from agents.collection_management_agent import CollectionManagementAgent
+
 import logging
 
 # 配置日志
@@ -27,6 +32,8 @@ class OrchestratorAgent(ReActAgent):
     """博物馆智能体系统的核心协调智能体"""
     
     def __init__(self):
+        logger.info("[核心协调智能体] 开始初始化...")
+        
         # 初始化工具集
         toolkit = Toolkit()
         toolkit.register_tool_function(execute_museum_service)
@@ -66,14 +73,70 @@ class OrchestratorAgent(ReActAgent):
         
         # 智能体系统中的其他专业智能体
         self.agents: Dict[str, AgentBase] = {}
+        
+        # 注册所有专业智能体
+        self._register_all_agents()
+        
+        logger.info("[核心协调智能体] 初始化完成 - 已加载6个工具函数，使用模型: qwen2:latest，注册了{}个专业智能体".format(len(self.agents)))
+    
+    def _register_all_agents(self) -> None:
+        """注册所有可用的专业智能体
+        
+        此方法会自动创建并注册项目中已实现的所有专业智能体，
+        确保核心协调智能体能够正确路由请求到对应的专业智能体。
+        """
+        logger.info("[核心协调智能体] 开始注册专业智能体...")
+        
+        # 记录注册前的智能体数量
+        initial_count = len(self.agents)
+        registered_count = 0
+        failed_count = 0
+        
+        # 创建并注册 TourBookingAgent
+        try:
+            tour_booking_agent = TourBookingAgent()
+            self.register_agent("TourBookingAgent", tour_booking_agent)
+            registered_count += 1
+        except Exception as e:
+            logger.error(f"[核心协调智能体] 注册TourBookingAgent失败: {str(e)}")
+            failed_count += 1
+        
+        # 创建并注册 QAAgent
+        try:
+            qa_agent = QAAgent()
+            self.register_agent("QAAgent", qa_agent)
+            registered_count += 1
+        except Exception as e:
+            logger.error(f"[核心协调智能体] 注册QAAgent失败: {str(e)}")
+            failed_count += 1
+        
+        # 创建并注册 CollectionManagementAgent
+        try:
+            collection_agent = CollectionManagementAgent()
+            self.register_agent("CollectionManagementAgent", collection_agent)
+            registered_count += 1
+        except Exception as e:
+            logger.error(f"[核心协调智能体] 注册CollectionManagementAgent失败: {str(e)}")
+            failed_count += 1
+        
+        # TODO: 未来可以根据需要添加更多智能体的注册
+        # 例如: FacilityServiceAgent, FeedbackAgent 等
+        
+        logger.info(f"[核心协调智能体] 专业智能体注册完成 - 成功: {registered_count}, 失败: {failed_count}, 总计: {len(self.agents)}个智能体")
+        
+        # 记录已注册的智能体列表
+        if self.agents:
+            agent_names = ", ".join(self.agents.keys())
+            logger.debug(f"[核心协调智能体] 已注册智能体列表: {agent_names}")
     
     def register_agent(self, agent_name: str, agent: AgentBase) -> None:
         """注册一个专业智能体"""
         self.agents[agent_name] = agent
+        logger.info(f"[核心协调智能体] 成功注册专业智能体: {agent_name} ({agent.__class__.__name__})")
     
     def get_agent_by_intent(self, intent: str) -> Optional[AgentBase]:
         """根据意图获取对应的专业智能体"""
-        # 简单的意图到智能体的映射
+        # 简单的意图到智能体的映射 TODO 
         intent_to_agent = {
             "tour_booking": "TourBookingAgent",
             "qa": "QAAgent",
@@ -87,10 +150,20 @@ class OrchestratorAgent(ReActAgent):
         }
         
         agent_name = intent_to_agent.get(intent)
-        return self.agents.get(agent_name) if agent_name else None
+        
+        logger.info(f"[核心协调智能体集合] - {self.agents}")
+
+        agent = self.agents.get(agent_name) if agent_name else None
+        
+        if agent:
+            logger.info(f"[核心协调智能体] 意图映射成功 - 意图: {intent} -> 智能体: {agent_name}")
+        else:
+            logger.info(f"[核心协调智能体] 未找到匹配的专业智能体 - 意图: {intent}")
+        
+        return agent
         
     def recognize_intent(self, message: str) -> str:
-        """简单的意图识别逻辑，实际项目中可以替换为更复杂的NLP模型"""
+        """简单的意图识别逻辑，实际项目中可以替换为更复杂的NLP模型 TODO """
         message_lower = message.lower()
         
         # 意图关键词映射
@@ -110,9 +183,11 @@ class OrchestratorAgent(ReActAgent):
         for intent, keywords in intent_keywords.items():
             for keyword in keywords:
                 if keyword in message_lower:
+                    logger.info(f"[核心协调智能体] 意图识别成功 - 消息: '{message[:50]}...' -> 意图: {intent} (匹配关键词: {keyword})")
                     return intent
         
         # 默认返回通用意图
+        logger.info(f"[核心协调智能体] 意图识别 - 默认分类为'general' - 消息: '{message[:50]}...'")
         return "general"
 
     async def route_request(self, message: str, user_id: str) -> Dict[str, Any]:
@@ -136,8 +211,7 @@ class OrchestratorAgent(ReActAgent):
                     msg = Msg(
                         name=user_id,
                         content=message,
-                        role="user",
-                        content_blocks=[{"type": "text", "text": message}]
+                        role="user"
                     )
                     response = await agent(msg)
                     return {
@@ -175,28 +249,41 @@ class OrchestratorAgent(ReActAgent):
             context = request_data.get("context", {})
             history = request_data.get("history", [])
             
+            # 记录接收到的请求基本信息
+            logger.info(f"[核心协调智能体] 收到请求 - 用户ID: {user_id}, 请求数据长度: {len(str(request_data))}字符")
+            logger.debug(f"[核心协调智能体] 请求详细信息 - 消息: '{message[:100]}...', 上下文: {context}, 历史记录数量: {len(history)}")
+            
             # 1. 进行意图识别
+            logger.info(f"[核心协调智能体] 开始意图识别 - 消息: '{message[:50]}...'")
             intent = self.recognize_intent(message)
             
-            # 2. 记录处理信息
-            logger.info(f"[核心协调智能体] 收到请求 - 用户ID: {user_id}, 消息: {message}, 识别意图: {intent}")
+            # 2. 记录识别到的意图
+            logger.info(f"[核心协调智能体] 意图识别完成 - 识别意图: {intent}")
             
             # 3. 尝试找到对应的专业智能体
+            logger.info(f"[核心协调智能体] 查找匹配的专业智能体 - 意图: {intent}")
             agent = self.get_agent_by_intent(intent)
             
             if agent:
                 # 4. 如果有对应的智能体，将请求路由给它
+                logger.info(f"[核心协调智能体] 找到匹配的专业智能体 - 智能体名称: {agent.name}, 智能体类型: {agent.__class__.__name__}")
+                
+                # 构建消息对象
                 msg = Msg(
                     name=user_id,
                     content=message,
-                    role="user",
-                    content_blocks=[{"type": "text", "text": message}]
+                    role="user"
                 )
                 
                 # 调用专业智能体处理请求
+                logger.info(f"[核心协调智能体] 开始调用专业智能体处理请求 - 智能体: {agent.name}")
                 response = await agent(msg)
                 
-                # 5. 返回处理结果
+                # 5. 记录智能体响应信息
+                logger.info(f"[核心协调智能体] 专业智能体处理完成 - 智能体: {agent.name}, 响应状态: 成功")
+                logger.debug(f"[核心协调智能体] 专业智能体响应内容 - {str(response.content)[:100]}...")
+                
+                # 返回处理结果
                 return {
                     "status": "success",
                     "result": {
@@ -211,8 +298,7 @@ class OrchestratorAgent(ReActAgent):
                 }
             else:
                 # 6. 如果没有对应的智能体，使用默认的处理方式
-                # 这里可以实现一个默认的处理逻辑，或者调用其他服务
-                # 由于这是模拟环境，我们返回一个模拟的成功响应
+                logger.info(f"[核心协调智能体] 未找到匹配的专业智能体，使用默认处理方式 - 意图: {intent}")
                 
                 # 根据不同意图返回不同的默认响应
                 default_responses = {
@@ -225,6 +311,7 @@ class OrchestratorAgent(ReActAgent):
                 }
                 
                 response_content = default_responses.get(intent, default_responses["general"])
+                logger.info(f"[核心协调智能体] 默认处理完成 - 意图: {intent}, 响应内容: '{response_content[:50]}...'")
                 
                 return {
                     "status": "success",
@@ -240,7 +327,8 @@ class OrchestratorAgent(ReActAgent):
                 }
         except Exception as e:
             # 处理异常情况
-            logger.info(f"[核心协调智能体] 处理请求时发生错误: {str(e)}")
+            logger.error(f"[核心协调智能体] 处理请求时发生错误 - 错误类型: {type(e).__name__}, 错误消息: {str(e)}")
+            logger.exception("[核心协调智能体] 异常详细信息: ")
             return {
                 "status": "error",
                 "code": 500,

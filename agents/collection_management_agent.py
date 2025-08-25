@@ -17,6 +17,9 @@ class CollectionManagementAgent(AgentBase):
     """博物馆藏品管理智能体"""
     
     def __init__(self):
+        # 调用父类的初始化方法
+        super().__init__()
+        
         # 初始化工具集
         toolkit = Toolkit()
         toolkit.register_tool_function(execute_museum_service)

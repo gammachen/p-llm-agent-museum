@@ -15,6 +15,9 @@ class TourBookingAgent(AgentBase):
     """博物馆导览与预约智能体"""
     
     def __init__(self):
+        # 调用父类的初始化方法
+        super().__init__()
+        
         # 初始化工具集
         toolkit = Toolkit()
         toolkit.register_tool_function(get_museum_booking_info)

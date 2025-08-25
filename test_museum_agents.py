@@ -47,7 +47,7 @@ class MuseumAgentSystem:
         
         for i, test_case in enumerate(test_cases):
             print(f"\n测试用例 {i+1}: {test_case}")
-            user_msg = Msg(name="user", content=test_case)
+            user_msg = Msg(name="user", role="user", content=test_case)
             response = await self.orchestrator.reply(user_msg)
             print(f"OrchestratorAgent 响应: {response.content}")
     
@@ -65,7 +65,7 @@ class MuseumAgentSystem:
         
         for i, test_case in enumerate(test_cases):
             print(f"\n测试用例 {i+1}: {test_case}")
-            user_msg = Msg(name="user", content=test_case)
+            user_msg = Msg(name="user", role="user", content=test_case)
             response = await self.tour_booking_agent.reply(user_msg)
             print(f"TourBookingAgent 响应: {response.content}")
     
@@ -83,7 +83,7 @@ class MuseumAgentSystem:
         
         for i, test_case in enumerate(test_cases):
             print(f"\n测试用例 {i+1}: {test_case}")
-            user_msg = Msg(name="user", content=test_case)
+            user_msg = Msg(name="user", role="user", content=test_case)
             response = await self.qa_agent.reply(user_msg)
             print(f"QAAgent 响应: {response.content}")
     
@@ -101,7 +101,7 @@ class MuseumAgentSystem:
         
         for i, test_case in enumerate(test_cases):
             print(f"\n测试用例 {i+1}: {test_case}")
-            user_msg = Msg(name="user", content=test_case)
+            user_msg = Msg(name="user", role="user", content=test_case)
             response = await self.collection_management_agent.reply(user_msg)
             print(f"CollectionManagementAgent 响应: {response.content}")
     
@@ -117,7 +117,7 @@ class MuseumAgentSystem:
                 break
             
             # 创建用户消息
-            user_msg = Msg(name="user", content=user_input)
+            user_msg = Msg(name="user", role="user", content=user_input)
             
             # 发送给OrchestratorAgent
             response = await self.orchestrator.reply(user_msg)

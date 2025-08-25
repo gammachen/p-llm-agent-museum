@@ -1,5 +1,5 @@
 from typing import Dict, Any, Optional
-from agentscope.agent import AgentBase
+from agentscope.agent import ReActAgent
 from agentscope.formatter import OllamaChatFormatter
 from agentscope.memory import InMemoryMemory
 from agentscope.model import OllamaChatModel
@@ -11,29 +11,29 @@ from utils.agent_tools import (
 )
 from agentscope.message import Msg
 
-class QAAgent(AgentBase):
+class QAAgent(ReActAgent):
     """博物馆咨询问答智能体"""
     
     def __init__(self):
-        # 调用父类的初始化方法
-        super().__init__()
-        
         # 初始化工具集
         toolkit = Toolkit()
         toolkit.register_tool_function(execute_museum_service)
         toolkit.register_tool_function(search_collection_info)
         toolkit.register_tool_function(search_exhibition_info)
         
-        self.model = OllamaChatModel(
+        model = OllamaChatModel(
             model_name="qwen2:latest",
             enable_thinking=False,
             stream=True,
         )
         
-        self.formatter = OllamaChatFormatter()
-        self.toolkit = toolkit
-        self.memory = InMemoryMemory()
-        self.name = "QAAgent"
+        formatter = OllamaChatFormatter()
+        memory = InMemoryMemory()
+        name = "QAAgent"
+        sys_prompt = "你是博物馆的咨询助手，负责回答关于博物馆的各种问题，包括开放时间、票价、交通、展览、藏品等信息。"
+        
+        # 调用父类的初始化方法
+        super().__init__(name=name, sys_prompt=sys_prompt, model=model, formatter=formatter, toolkit=toolkit, memory=memory)
         
         # 常见问题的预设答案
         self.common_answers = {
@@ -62,7 +62,7 @@ class QAAgent(AgentBase):
                 break
         else:
             # 分析用户问题类型并调用相应功能
-            if any(keyword in user_message for keyword in ["藏品", "文物", "展品"]):
+            if any(keyword in user_message for keyword in ["藏品", "文物", "艺术品", "展品"]):
                 response = await self._handle_collection_query(user_message)
             elif any(keyword in user_message for keyword in ["展览", "特展", "主题展"]):
                 response = await self._handle_exhibition_query(user_message)
@@ -137,9 +137,9 @@ class QAAgent(AgentBase):
         ]
         
         # 使用模型生成回答
-        model_input = self.formatter.format(content)
+        model_input = await self.formatter.format(content)
         response = await self.model(model_input)
-        model_output = self.formatter.parse(response)
+        model_output = await self.formatter.parse(response)
         
         return model_output.get("content", "抱歉，我暂时无法回答这个问题，请您稍后再试或联系博物馆工作人员。")
     

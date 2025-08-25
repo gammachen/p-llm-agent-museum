@@ -4,6 +4,7 @@ import os
 from typing import Dict, Any, List, Optional
 from utils.email_tool import send_email
 import logging
+from agentscope.tool import ToolResponse
 
 logger = logging.getLogger(__name__)
 
@@ -101,49 +102,59 @@ class MuseumToolkit:
         return MuseumToolkit.call_service(endpoint, method="GET")
 
 # 为agentscope工具注册准备的函数
-def execute_museum_service(endpoint: str, method: str = "GET", data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def execute_museum_service(endpoint: str, method: str = "GET", data: Optional[Dict[str, Any]] = None) -> ToolResponse:
     """执行博物馆服务API调用的工具函数"""
-    return MuseumToolkit.call_service(endpoint, method, data)
+    result = MuseumToolkit.call_service(endpoint, method, data)
+    return ToolResponse(data=result)
 
-def send_museum_email(recipient: str, subject: str, content: str) -> Dict[str, str]:
+def send_museum_email(recipient: str, subject: str, content: str) -> ToolResponse:
     """发送博物馆邮件通知的工具函数"""
-    return MuseumToolkit.send_email_notification(recipient, subject, content)
+    result = MuseumToolkit.send_email_notification(recipient, subject, content)
+    return ToolResponse(data=result)
 
-def get_museum_booking_info(phone: Optional[str] = None) -> Dict[str, Any]:
+def get_museum_booking_info(phone: Optional[str] = None) -> ToolResponse:
     """获取博物馆预约信息的工具函数"""
-    return MuseumToolkit.get_booking_info(phone)
+    result = MuseumToolkit.get_booking_info(phone)
+    return ToolResponse(data=result)
 
-def create_museum_booking(booking_data: Dict[str, Any]) -> Dict[str, Any]:
+def create_museum_booking(booking_data: Dict[str, Any]) -> ToolResponse:
     """创建博物馆预约的工具函数"""
-    return MuseumToolkit.create_booking(booking_data)
+    result = MuseumToolkit.create_booking(booking_data)
+    return ToolResponse(data=result)
 
-def ask_museum_question(question: str) -> Dict[str, Any]:
+def ask_museum_question(question: str) -> ToolResponse:
     """向博物馆咨询问答服务提问的工具函数"""
-    return MuseumToolkit.ask_question(question)
+    result = MuseumToolkit.ask_question(question)
+    return ToolResponse(data=result)
 
-def submit_museum_feedback(feedback_data: Dict[str, Any]) -> Dict[str, Any]:
+def submit_museum_feedback(feedback_data: Dict[str, Any]) -> ToolResponse:
     """提交博物馆游客反馈的工具函数"""
-    return MuseumToolkit.submit_feedback(feedback_data)
+    result = MuseumToolkit.submit_feedback(feedback_data)
+    return ToolResponse(data=result)
 
-def search_collection_info(keywords: str) -> Dict[str, Any]:
+def search_collection_info(keywords: str) -> ToolResponse:
     """搜索博物馆藏品信息的工具函数"""
     endpoint = f"/api/internal/collection/search?keywords={keywords}"
-    return MuseumToolkit.call_service(endpoint, method="GET")
+    result = MuseumToolkit.call_service(endpoint, method="GET")
+    return ToolResponse(data=result)
 
-def search_exhibition_info(keywords: str) -> Dict[str, Any]:
+def search_exhibition_info(keywords: str) -> ToolResponse:
     """搜索博物馆展览信息的工具函数"""
     endpoint = f"/api/public/qa/exhibitions/search?keywords={keywords}"
-    return MuseumToolkit.call_service(endpoint, method="GET")
+    result = MuseumToolkit.call_service(endpoint, method="GET")
+    return ToolResponse(data=result)
 
-def get_collection_environment_data(location: str) -> Dict[str, Any]:
+def get_collection_environment_data(location: str) -> ToolResponse:
     """获取藏品环境监测数据的工具函数"""
     endpoint = f"/api/internal/collection/environment?location={location}"
-    return MuseumToolkit.call_service(endpoint, method="GET")
+    result = MuseumToolkit.call_service(endpoint, method="GET")
+    return ToolResponse(data=result)
 
-def create_exhibition_loan_request(loan_data: Dict[str, Any]) -> Dict[str, Any]:
+def create_exhibition_loan_request(loan_data: Dict[str, Any]) -> ToolResponse:
     """创建借展申请的工具函数"""
     endpoint = "/api/internal/collection/loan-request"
-    return MuseumToolkit.call_service(endpoint, method="POST", data=loan_data)
+    result = MuseumToolkit.call_service(endpoint, method="POST", data=loan_data)
+    return ToolResponse(data=result)
 
 # 在MuseumToolkit类中添加对应的静态方法
 def _add_missing_methods_to_toolkit():

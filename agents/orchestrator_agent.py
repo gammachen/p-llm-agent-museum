@@ -41,7 +41,7 @@ class OrchestratorAgent(ReActAgent):
         
         model = OllamaChatModel(
             model_name="qwen2:latest",
-            enable_thinking=True,
+            enable_thinking=False,
             stream=True,
         )
         

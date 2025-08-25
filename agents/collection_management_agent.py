@@ -1,5 +1,5 @@
 from typing import Dict, Any, Optional
-from agentscope.agent import AgentBase
+from agentscope.agent import ReActAgent
 from agentscope.formatter import OllamaChatFormatter
 from agentscope.memory import InMemoryMemory
 from agentscope.model import OllamaChatModel
@@ -13,13 +13,10 @@ from utils.agent_tools import (
 )
 from agentscope.message import Msg
 
-class CollectionManagementAgent(AgentBase):
+class CollectionManagementAgent(ReActAgent):
     """博物馆藏品管理智能体"""
     
     def __init__(self):
-        # 调用父类的初始化方法
-        super().__init__()
-        
         # 初始化工具集
         toolkit = Toolkit()
         toolkit.register_tool_function(execute_museum_service)
@@ -28,16 +25,19 @@ class CollectionManagementAgent(AgentBase):
         toolkit.register_tool_function(create_exhibition_loan_request)
         toolkit.register_tool_function(send_museum_email)
         
-        self.model = OllamaChatModel(
+        model = OllamaChatModel(
             model_name="qwen2:latest",
             enable_thinking=False,
             stream=True,
         )
         
-        self.formatter = OllamaChatFormatter()
-        self.toolkit = toolkit
-        self.memory = InMemoryMemory()
-        self.name = "CollectionManagementAgent"
+        formatter = OllamaChatFormatter()
+        memory = InMemoryMemory()
+        name = "CollectionManagementAgent"
+        sys_prompt = "你是博物馆的藏品管理助手，负责处理藏品相关的各种事务，包括藏品查询、环境监测、借展申请等。"
+        
+        # 调用父类的初始化方法
+        super().__init__(name=name, sys_prompt=sys_prompt, model=model, formatter=formatter, toolkit=toolkit, memory=memory)
     
     async def reply(self, x: Any = None, **kwargs) -> Msg:
         """处理藏品管理相关的请求"""

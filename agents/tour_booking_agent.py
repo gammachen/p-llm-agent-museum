@@ -1,5 +1,5 @@
 from typing import Dict, Any, Optional
-from agentscope.agent import AgentBase
+from agentscope.agent import ReActAgent
 from agentscope.formatter import OllamaChatFormatter
 from agentscope.memory import InMemoryMemory
 from agentscope.model import OllamaChatModel
@@ -11,29 +11,29 @@ from utils.agent_tools import (
 )
 from agentscope.message import Msg
 
-class TourBookingAgent(AgentBase):
+class TourBookingAgent(ReActAgent):
     """博物馆导览与预约智能体"""
     
     def __init__(self):
-        # 调用父类的初始化方法
-        super().__init__()
-        
         # 初始化工具集
         toolkit = Toolkit()
         toolkit.register_tool_function(get_museum_booking_info)
         toolkit.register_tool_function(create_museum_booking)
         toolkit.register_tool_function(execute_museum_service)
         
-        self.model = OllamaChatModel(
+        model = OllamaChatModel(
             model_name="qwen2:latest",
             enable_thinking=False,
             stream=True,
         )
         
-        self.formatter = OllamaChatFormatter()
-        self.toolkit = toolkit
-        self.memory = InMemoryMemory()
-        self.name = "TourBookingAgent"
+        formatter = OllamaChatFormatter()
+        memory = InMemoryMemory()
+        name = "TourBookingAgent"
+        sys_prompt = "你是博物馆的导览与预约助手，负责处理门票预约、参观路线规划等相关事务。"
+        
+        # 调用父类的初始化方法
+        super().__init__(name=name, sys_prompt=sys_prompt, model=model, formatter=formatter, toolkit=toolkit, memory=memory)
     
     async def reply(self, x: Any = None, **kwargs) -> Msg:
         """处理用户的预约请求"""
@@ -45,13 +45,14 @@ class TourBookingAgent(AgentBase):
         user_id = x.name if isinstance(x, Msg) else "anonymous"
         
         # 分析用户意图
+        # 注意：formatter.format() 期望接收 Msg 对象的列表
         content = [
-            {"role": "system", "content": "你是博物馆的导览与预约助手，负责处理门票预约、团队预约，并为用户生成个性化参观路线。"},
-            {"role": "user", "content": user_message}
+            Msg(role="system", content="你是博物馆的导览与预约助手，负责处理门票预约、团队预约，并为用户生成个性化参观路线。"),
+            Msg(role="user", content=user_message)
         ]
         
         # 使用模型理解用户意图
-        model_input = self.formatter.format(content)
+        model_input = await self.formatter.format(content)
         response = await self.model(model_input)
         model_output = self.formatter.parse(response)
         

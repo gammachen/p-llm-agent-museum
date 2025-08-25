@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博物馆智能问答系统</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <script src="/assets/tailwindcss.js"></script>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+     <link href="/assets/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4338ca',
+                        secondary: '#8b5cf6',
+                        neutral: '#f8fafc',
+                        dark: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .chat-bubble-user {
+                @apply bg-primary text-white rounded-2xl rounded-tr-none p-4 max-w-[80%] shadow-md;
+            }
+            .chat-bubble-bot {
+                @apply bg-white text-dark rounded-2xl rounded-tl-none p-4 max-w-[80%] shadow-md border border-gray-100;
+            }
+            .chat-input-focus {
+                @apply focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- 头部区域 -->
+        <header class="text-center mb-8">
+            <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-primary mb-2">
+                <i class="fa fa-university mr-2"></i>博物馆智能问答系统
+            </h1>
+            <p class="text-gray-600 text-lg">
+                欢迎使用博物馆智能助手，请问有什么可以帮助您的？
+            </p>
+        </header>
+
+        <!-- 主聊天界面 -->
+        <main class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <!-- 聊天历史区域 -->
+            <div id="chat-container" class="h-[clamp(300px,70vh,600px)] overflow-y-auto p-6 bg-neutral">
+                <!-- 欢迎消息 -->
+                <div class="flex items-start justify-start mb-4">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white mr-3 flex-shrink-0">
+                        <i class="fa fa-robot"></i>
+                    </div>
+                    <div class="chat-bubble-bot">
+                        <p>您好！我是博物馆智能助手，很高兴为您服务。您可以询问关于博物馆的开放时间、展览信息、藏品详情等问题。</p>
+                    </div>
+                </div>
+                
+                <!-- 常见问题提示 -->
+                <div class="flex items-start justify-start mb-4">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white mr-3 flex-shrink-0">
+                        <i class="fa fa-robot"></i>
+                    </div>
+                    <div class="chat-bubble-bot">
+                        <p class="mb-2">您可以尝试问以下问题：</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="suggestion-btn text-sm px-3 py-1 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors">
+                                博物馆的开放时间
+                            </button>
+                            <button class="suggestion-btn text-sm px-3 py-1 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors">
+                                当前有什么展览
+                            </button>
+                            <button class="suggestion-btn text-sm px-3 py-1 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors">
+                                介绍一下青铜鼎藏品
+                            </button>
+                            <button class="suggestion-btn text-sm px-3 py-1 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors">
+                                如何预约参观
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="p-4 border-t border-gray-200 bg-white">
+                <div class="flex gap-2">
+                    <input 
+                        type="text" 
+                        id="user-input" 
+                        placeholder="请输入您的问题..."
+                        class="flex-1 px-4 py-3 rounded-full border border-gray-300 chat-input-focus transition-all"
+                    >
+                    <button 
+                        id="send-btn" 
+                        class="bg-primary hover:bg-primary/90 text-white p-3 rounded-full transition-all transform hover:scale-105 focus:ring-4 focus:ring-primary/30"
+                    >
+                        <i class="fa fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚区域 -->
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            <p>&copy; 2025 博物馆智能问答系统 | 由协调智能体提供支持</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const suggestionBtns = document.querySelectorAll('.suggestion-btn');
+
+        // 聊天历史记录
+        let chatHistory = [];
+        let userId = 'visitor_' + Math.floor(Math.random() * 10000);
+
+        // 添加消息到聊天界面
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = isUser ? 
+                'flex items-start justify-end mb-4' : 
+                'flex items-start justify-start mb-4';
+
+            const iconHtml = isUser ? 
+                '<div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 ml-3 flex-shrink-0">\n' +
+                '    <i class="fa fa-user"></i>\n' +
+                '</div>' : 
+                '<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white mr-3 flex-shrink-0">\n' +
+                '    <i class="fa fa-robot"></i>\n' +
+                '</div>';
+
+            const bubbleHtml = `<div class="${isUser ? 'chat-bubble-user' : 'chat-bubble-bot'}">\n` +
+                '    <p>' + content + '</p>\n' +
+                '</div>';
+
+            messageDiv.innerHTML = isUser ? bubbleHtml + iconHtml : iconHtml + bubbleHtml;
+            chatContainer.appendChild(messageDiv);
+            
+            // 滚动到底部
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // 更新聊天历史
+            if (isUser) {
+                chatHistory.push({ role: 'user', content: content });
+            } else {
+                chatHistory.push({ role: 'assistant', content: content });
+            }
+
+            // 限制历史记录长度，避免内存占用过高
+            if (chatHistory.length > 20) {
+                chatHistory = chatHistory.slice(-20);
+            }
+        }
+
+        // 发送消息到服务器
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // 添加用户消息到界面
+            addMessage(message, true);
+            userInput.value = '';
+
+            // 显示"正在输入"状态
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'flex items-start justify-start mb-4';
+            typingIndicator.innerHTML = '<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white mr-3 flex-shrink-0">\n' +
+                '    <i class="fa fa-robot"></i>\n' +
+                '</div>\n' +
+                '<div class="bg-white text-dark rounded-2xl rounded-tl-none p-4 max-w-[80%] shadow-md border border-gray-100">\n' +
+                '    <p class="text-gray-500">正在输入...</p>\n' +
+                '</div>';
+            chatContainer.appendChild(typingIndicator);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                // 构建请求数据
+                const requestData = {
+                    user_id: userId,
+                    message: message,
+                    history: chatHistory.slice(-5) // 只发送最近5条历史记录
+                };
+
+                // 发送请求到orchestrate路由
+                const response = await fetch('/api/core/orchestrate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                // 移除"正在输入"状态
+                chatContainer.removeChild(typingIndicator);
+
+                if (!response.ok) {
+                    throw new Error('HTTP error! Status: ' + response.status);
+                }
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // 获取意图和目标服务
+                    const { intent, sub_intent, target_service } = data;
+                    
+                    try {
+                        // 尝试直接调用目标服务获取实际响应
+                        const serviceResponse = await fetch(target_service, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ message: message, context: data.context })
+                        });
+
+                        if (serviceResponse.ok) {
+                            const serviceData = await serviceResponse.json();
+                            // 显示服务的响应
+                            addMessage(formatResponse(serviceData));
+                        } else {
+                            // 如果直接调用服务失败，显示路由信息
+                            addMessage('我已识别您的意图为"' + intent + '"' + (sub_intent ? '，子意图为"' + sub_intent + '"' : '') + '，将为您转接至相应服务。');
+                        }
+                    } catch (e) {
+                        // 回退方案：如果无法直接调用服务，显示路由信息
+                        addMessage('我已识别您的意图为"' + intent + '"' + (sub_intent ? '，子意图为"' + sub_intent + '"' : '') + '，将为您转接至相应服务。');
+                    }
+                } else {
+                    addMessage('抱歉，处理您的请求时遇到问题：' + (data.message || '未知错误'));
+                }
+            } catch (error) {
+                // 移除"正在输入"状态
+                if (typingIndicator.parentNode === chatContainer) {
+                    chatContainer.removeChild(typingIndicator);
+                }
+                addMessage('抱歉，无法连接到服务器：' + error.message);
+            }
+        }
+
+        // 格式化服务响应
+        function formatResponse(data) {
+            if (typeof data === 'string') {
+                return data;
+            } else if (data.message) {
+                return data.message;
+            } else if (data.response) {
+                return data.response;
+            } else if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+                // 处理数组数据
+                if (data.data[0].name && data.data[0].collection_id) {
+                    // 藏品列表
+                    let result = '找到以下藏品：\n';
+                    data.data.slice(0, 5).forEach(item => {
+                        result += '- ' + item.name + ' (ID: ' + item.collection_id + ')\n';
+                    });
+                    return result;
+                } else {
+                    return JSON.stringify(data.data);
+                }
+            } else if (data.data) {
+                return JSON.stringify(data.data);
+            } else {
+                return JSON.stringify(data);
+            }
+        }
+
+        // 添加事件监听器
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // 为建议按钮添加点击事件
+        suggestionBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                userInput.value = btn.textContent.trim();
+                userInput.focus();
+            });
+        });
+    </script>
+</body>
+</html>

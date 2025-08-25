@@ -130,8 +130,9 @@ class MuseumAgentSystem:
         await self.test_qa_agent()
         await self.test_collection_management_agent()
         
-        # 最后运行交互式演示
-        await self.interactive_demo()
+        # 跳过交互式演示（在非交互式环境中运行会导致EOFError）
+        # await self.interactive_demo()
+        print("\n所有自动测试已完成！")
 
 async def main():
     """主函数"""

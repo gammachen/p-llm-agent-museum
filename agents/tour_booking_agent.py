@@ -67,8 +67,8 @@ class TourBookingAgent(ReActAgent):
             result = "请问您需要预约门票、查询预约信息、了解可用时段，还是需要我为您生成个性化参观路线？"
         
         # 将结果添加到记忆中
-        self.memory.add(x)
-        self.memory.add(Msg(name=self.name, content=result, role="assistant"))
+        await self.memory.add(x)
+        await self.memory.add(Msg(name=self.name, content=result, role="assistant"))
         
         # 返回响应
         return Msg(name=self.name, content=result, role="assistant")

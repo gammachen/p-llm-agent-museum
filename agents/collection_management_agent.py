@@ -62,8 +62,8 @@ class CollectionManagementAgent(ReActAgent):
             response = "请问您需要查询藏品列表、获取藏品详情、查看环境监测数据，还是处理借展申请？"
         
         # 将结果添加到记忆中
-        self.memory.add(x)
-        self.memory.add(Msg(name=self.name, content=response, role="assistant"))
+        await self.memory.add(x)
+        await self.memory.add(Msg(name=self.name, content=response, role="assistant"))
         
         # 返回响应
         return Msg(name=self.name, content=response, role="assistant")
@@ -71,7 +71,8 @@ class CollectionManagementAgent(ReActAgent):
     async def _get_collection_list(self, user_message: str) -> str:
         """获取藏品列表"""
         # 调用服务获取藏品列表
-        result = execute_museum_service(endpoint="/api/internal/collection/list")
+        tool_response = execute_museum_service(endpoint="/api/internal/collection/list")
+        result = tool_response.metadata
         
         if result.get("status") == "success":
             collections = result.get("data", [])
@@ -95,10 +96,11 @@ class CollectionManagementAgent(ReActAgent):
             return "请提供藏品的ID或名称，我可以为您查询详情。"
         
         # 调用服务获取藏品详情
-        result = execute_museum_service(
+        tool_response = execute_museum_service(
             endpoint=f"/api/internal/collection/detail",
-            params={"collection_id": collection_id}
+            data={"collection_id": collection_id}
         )
+        result = tool_response.metadata
         
         if result.get("status") == "success":
             collection = result.get("data", {})
@@ -124,7 +126,8 @@ class CollectionManagementAgent(ReActAgent):
             location = "默认展厅"  # 使用默认值
         
         # 调用服务获取环境监测数据
-        result = get_collection_environment_data(location)
+        tool_response = get_collection_environment_data(location)
+        result = tool_response.metadata
         
         if result.get("status") == "success":
             env_data = result.get("data", {})
@@ -153,7 +156,8 @@ class CollectionManagementAgent(ReActAgent):
         }
         
         # 调用服务创建借展申请
-        result = create_exhibition_loan_request(loan_data)
+        tool_response = create_exhibition_loan_request(loan_data)
+        result = tool_response.metadata
         
         if result.get("status") == "success":
             loan_info = result.get("data", {})
@@ -183,7 +187,8 @@ class CollectionManagementAgent(ReActAgent):
             return "请提供搜索关键词，我可以帮您查找相关藏品。"
         
         # 调用服务搜索藏品
-        result = search_collection_info(keywords)
+        tool_response = search_collection_info(keywords)
+        result = tool_response.metadata
         
         if result.get("status") == "success":
             collections = result.get("data", [])

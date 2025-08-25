@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from datetime import datetime
+from fastapi import APIRouter, HTTPException, Query
 from utils.data_loader import load_collection_management, load_security_management, load_facility_management, load_administration
 
 router = APIRouter(prefix="/api/internal", tags=["Internal Management"])
@@ -66,6 +67,32 @@ def get_collection_detail(collection_id: str):
         return {"status": "success", "data": collection}
     else:
         raise HTTPException(status_code=404, detail="未找到藏品信息")
+
+@router.get("/collection/search")
+def search_collection_info(
+    keywords: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    period: Optional[str] = Query(None)
+):
+    """搜索藏品信息"""
+    data = load_collection_management()
+    collections = data.get("collections", [])
+    
+    # 应用搜索条件
+    if keywords:
+        keywords = keywords.lower()
+        collections = [
+            c for c in collections 
+            if keywords in c["name"].lower() or 
+               keywords in c["description"].lower() or 
+               keywords in c["origin"].lower()
+        ]
+    if category:
+        collections = [c for c in collections if c["category"] == category]
+    if period:
+        collections = [c for c in collections if period in c["period"]]
+    
+    return {"status": "success", "data": collections}
 
 @router.get("/collection/environment")
 def get_environment_monitoring():

@@ -4,6 +4,7 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 import json
 import os
+from fastapi import APIRouter, HTTPException, Query
 from utils.data_loader import load_pre_visit_booking, load_pre_visit_information, load_on_visit_services, load_post_visit_services
 
 router = APIRouter(prefix="/api/public", tags=["Public Services"])
@@ -94,6 +95,32 @@ def ask_question(qa_request: QARequest):
         answer = "感谢您的提问！我们正在为您查询相关信息，稍后将给您更详细的回复。"
     
     return {"status": "success", "question": qa_request.question, "answer": answer}
+
+@router.get("/qa/exhibitions/search")
+def search_exhibitions(
+    keywords: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    start_date: Optional[str] = Query(None)
+):
+    """搜索展览信息"""
+    info_data = load_pre_visit_information()
+    exhibitions = info_data.get("exhibitions", [])
+    
+    # 应用搜索条件
+    if keywords:
+        keywords = keywords.lower()
+        exhibitions = [
+            e for e in exhibitions 
+            if keywords in e["title"].lower() or 
+               keywords in e["description"].lower() or 
+               keywords in e["subtitle"].lower()
+        ]
+    if status:
+        exhibitions = [e for e in exhibitions if e["status"] == status]
+    if start_date:
+        exhibitions = [e for e in exhibitions if e["start_date"] >= start_date]
+    
+    return {"status": "success", "data": exhibitions}
 
 # 便民服务
 @router.get("/facility-services/locations")

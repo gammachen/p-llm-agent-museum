@@ -86,7 +86,8 @@ class QAAgent(ReActAgent):
             return "请问您想了解哪件藏品的信息？您可以告诉我藏品的名称或关键词，我会为您查询。"
         
         # 调用服务搜索藏品信息
-        result = search_collection_info(keywords)
+        tool_response = search_collection_info(keywords)
+        result = tool_response.metadata
         
         if result.get("status") == "success":
             collections = result.get("data", [])
@@ -109,10 +110,12 @@ class QAAgent(ReActAgent):
         keywords = self._extract_keywords(user_message)
         if not keywords:
             # 如果没有关键词，获取所有展览信息
-            result = execute_museum_service(endpoint="/api/public/qa/exhibitions")
+            tool_response = execute_museum_service(endpoint="/api/public/qa/exhibitions")
+            result = tool_response.metadata
         else:
             # 否则搜索特定展览信息
-            result = search_exhibition_info(keywords)
+            tool_response = search_exhibition_info(keywords)
+            result = tool_response.metadata
         
         if result.get("status") == "success":
             exhibitions = result.get("data", [])

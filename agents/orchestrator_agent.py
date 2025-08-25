@@ -20,9 +20,6 @@ class OrchestratorAgent(ReActAgent):
     """博物馆智能体系统的核心协调智能体"""
     
     def __init__(self):
-        # 调用父类的初始化方法
-        super().__init__()
-        
         # 初始化工具集
         toolkit = Toolkit()
         toolkit.register_tool_function(execute_museum_service)
@@ -32,27 +29,36 @@ class OrchestratorAgent(ReActAgent):
         toolkit.register_tool_function(ask_museum_question)
         toolkit.register_tool_function(submit_museum_feedback)
         
-        # 智能体系统中的其他专业智能体
-        self.agents: Dict[str, AgentBase] = {}
-        
-        super().__init__(
-            name="Orchestrator",
-            sys_prompt="""你是博物馆智能体系统的核心协调智能体，负责：
+        # 设置智能体参数
+        name = "OrchestratorAgent"
+        sys_prompt = """你是博物馆智能体系统的核心协调智能体，负责：
 1. 接收所有内外部请求
 2. 进行意图识别
 3. 路由给最合适的专业智能体处理
 4. 维护整个系统的对话状态和任务上下文
 
-你可以使用工具来调用博物馆服务API获取信息或执行操作。""",
-            model=OllamaChatModel(
-                model_name="qwen2:latest",
-                enable_thinking=False,
-                stream=True,
-            ),
-            formatter=OllamaChatFormatter(),
-            toolkit=toolkit,
-            memory=InMemoryMemory(),
+你可以使用工具来调用博物馆服务API获取信息或执行操作。"""
+        
+        model = OllamaChatModel(
+            model_name="qwen2:latest",
+            enable_thinking=True,
+            stream=True,
         )
+        
+        formatter = OllamaChatFormatter()
+        
+        # 调用父类的初始化方法，传递所有必要的参数
+        super().__init__(
+            name=name,
+            sys_prompt=sys_prompt,
+            model=model,
+            formatter=formatter,
+            toolkit=toolkit,
+            memory=InMemoryMemory()
+        )
+        
+        # 智能体系统中的其他专业智能体
+        self.agents: Dict[str, AgentBase] = {}
     
     def register_agent(self, agent_name: str, agent: AgentBase) -> None:
         """注册一个专业智能体"""

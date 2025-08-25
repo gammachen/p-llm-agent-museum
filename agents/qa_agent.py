@@ -71,8 +71,8 @@ class QAAgent(ReActAgent):
                 response = await self._generate_answer(user_message)
         
         # 将结果添加到记忆中
-        self.memory.add(x)
-        self.memory.add(Msg(name=self.name, content=response, role="assistant"))
+        await self.memory.add(x)
+        await self.memory.add(Msg(name=self.name, content=response, role="assistant"))
         
         # 返回响应
         return Msg(name=self.name, content=response, role="assistant")

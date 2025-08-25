@@ -103,18 +103,47 @@ SIMPLE_PATH_REDIRECTS = {
 async def send_request(service_url: str, params: Dict[str, Any]) -> Dict[str, Any]:
     """发送请求到指定服务并返回结果"""
     try:
-        # 在实际环境中，这里会使用httpx或其他HTTP客户端发送请求
-        # 由于这是模拟环境，我们先返回一个默认的成功响应
-        # 在实际部署时，需要替换为真实的HTTP请求代码
+        # 使用 httpx 发送 HTTP POST 请求到指定服务
+        async with httpx.AsyncClient() as client:
+            # 构建完整的 URL（假设服务运行在 localhost:8001）
+            full_url = f"http://localhost:8000{service_url}"
+            
+            # 发送 POST 请求并等待响应
+            response = await client.post(full_url, json=params)
+            
+            # 检查响应状态码
+            if response.status_code == 200:
+                # 尝试解析 JSON 响应
+                try:
+                    return {
+                        "status": "success",
+                        "data": response.json()
+                    }
+                except json.JSONDecodeError:
+                    return {
+                        "status": "success",
+                        "data": {
+                            "message": "请求成功，但无法解析响应内容",
+                            "raw_content": response.text
+                        }
+                    }
+            else:
+                # 处理非 200 状态码的响应
+                logger.error(f"服务 {service_url} 返回非成功状态码: {response.status_code}")
+                return {
+                    "status": "error",
+                    "code": response.status_code,
+                    "message": f"服务请求失败: {response.reason_phrase}"
+                }
+    except httpx.RequestError as e:
+        logger.error(f"发送请求到服务 {service_url} 网络错误: {str(e)}")
         return {
-            "status": "success",
-            "data": {
-                "message": f"请求已转发到 {service_url}",
-                "params": params
-            }
+            "status": "error",
+            "code": 503,
+            "message": f"服务不可用: {str(e)}"
         }
     except Exception as e:
-        logger.error(f"发送请求到服务 {service_url} 失败: {str(e)}")
+        logger.error(f"发送请求到服务 {service_url} 未知错误: {str(e)}")
         return {
             "status": "error",
             "code": 500,
@@ -236,8 +265,8 @@ async def orchestrate_request(request: RequestMessage) -> Dict[str, Any]:
             if specific_path.startswith('/api/public/qa'):
                 # QA服务期望的参数格式
                 request_params = {
-                    "query": request.message,
-                    "user_id": request.user_id
+                    "question": request.message,
+                    "context": {"user_id": request.user_id}
                 }
             elif specific_path.startswith('/api/public/tour-booking'):
                 # 预约服务期望的参数格式
@@ -252,63 +281,112 @@ async def orchestrate_request(request: RequestMessage) -> Dict[str, Any]:
                         "query": request.message
                     }
             
-            # 构建响应数据
-            response_data = {
-                "status": "success",
-                "data": {
+            # 发送请求到目标服务
+            logger.info(f"向服务发送请求: {specific_path}，参数: {request_params}")
+            service_response = await send_request(specific_path, request_params)
+            
+            # 处理服务响应
+            if service_response.get("status") == "success":
+                # 构建成功响应
+                response_data = {
+                    "status": "success",
+                    "data": {
+                        "intent": main_intent,
+                        "sub_intent": sub_intent,
+                        "target_service": specific_path,
+                        "service_response": service_response.get("data", {})
+                    },
                     "intent": main_intent,
-                    "sub_intent": sub_intent,
-                    "target_service": specific_path,
-                    "message": "请求已处理"
-                },
-                "intent": main_intent,
-                "sub_intent": sub_intent
-            }
-            
-            # 根据不同的意图和查询内容，提供相应的默认回复
-            if main_intent == "qa":
-                if sub_intent == "museum_info" or any(keyword in request.message for keyword in ["开放时间", "闭馆"]):
-                    # 为开放时间查询提供默认回复
-                    response_data["data"]["content"] = "博物馆开放时间为周二至周日 9:00-17:00（16:30停止入场），周一闭馆（法定节假日除外）。"
-                elif sub_intent == "exhibition_info" or "展览" in request.message:
-                    # 为展览信息查询提供默认回复
-                    response_data["data"]["content"] = "当前展览包括\"古埃及文明展\"和\"中国青铜器特展\"。详细信息可在博物馆官网查看。"
+                    "sub_intent": sub_intent
+                }
+                
+                return response_data
+            else:
+                # 处理服务返回的错误
+                error_code = service_response.get("code", 500)
+                error_message = service_response.get("message", "服务处理失败")
+                logger.error(f"目标服务返回错误: {error_code}, {error_message}")
+                
+                # 在服务失败的情况下，提供默认回复
+                default_response = {
+                    "status": "error",
+                    "code": error_code,
+                    "message": error_message,
+                    "data": {
+                        "intent": main_intent,
+                        "sub_intent": sub_intent,
+                        "target_service": specific_path,
+                        "fallback_response": True
+                    }
+                }
+                
+                # 根据不同的意图提供不同的默认回退内容
+                if main_intent == "qa":
+                    if sub_intent == "museum_info" or any(keyword in request.message for keyword in ["开放时间", "闭馆"]):
+                        default_response["data"]["content"] = "博物馆开放时间为周二至周日 9:00-17:00（16:30停止入场），周一闭馆（法定节假日除外）。"
+                    elif sub_intent == "exhibition_info" or "展览" in request.message:
+                        default_response["data"]["content"] = "当前展览包括\"古埃及文明展\"和\"中国青铜器特展\"。详细信息可在博物馆官网查看。"
+                    else:
+                        default_response["data"]["content"] = "感谢您的提问。我们已收到您的问题，正在为您准备详细的回答。"
+                elif main_intent == "tour_booking":
+                    default_response["data"]["content"] = "您可以通过博物馆官方网站或微信公众号进行参观预约。预约成功后将收到确认信息。"
+                elif main_intent == "collection" or any(keyword in request.message for keyword in ["藏品", "青铜鼎", "木乃伊"]):
+                    default_response["data"]["content"] = "博物馆藏有丰富的文物和艺术品，您可以通过博物馆APP或官网搜索特定藏品的详细信息。"
                 else:
-                    # 其他QA查询的默认回复
-                    response_data["data"]["content"] = "感谢您的提问。我们已收到您的问题，正在为您准备详细的回答。"
-            elif main_intent == "tour_booking":
-                # 预约相关查询的默认回复
-                response_data["data"]["content"] = "您可以通过博物馆官方网站或微信公众号进行参观预约。预约成功后将收到确认信息。"
-            elif main_intent == "collection" or any(keyword in request.message for keyword in ["藏品", "青铜鼎", "木乃伊"]):
-                # 藏品相关查询的默认回复
-                response_data["data"]["content"] = "博物馆藏有丰富的文物和艺术品，您可以通过博物馆APP或官网搜索特定藏品的详细信息。"
-            
-            return response_data
+                    default_response["data"]["content"] = "感谢您的提问。我们正在处理您的请求，请稍候。"
+                
+                return default_response
         else:
             # 没有匹配到任何服务，使用general意图的默认服务
             logger.warning(f"未找到匹配的服务，主意图: {main_intent}，使用默认服务")
             default_service = SERVICE_ROUTING.get("general", "/api/public/qa")
             
-            # 构建默认响应
-            response_data = {
-                "status": "success",
-                "data": {
-                    "intent": "general",
-                    "target_service": default_service,
-                    "message": "请求已处理",
-                    "content": "感谢您的提问。我们已收到您的问题，正在为您准备详细的回答。"
-                },
-                "intent": "general"
+            # 构建默认请求参数
+            default_params = {
+                "user_id": request.user_id,
+                "query": request.message,
+                "intent": "general",
+                "context": request.context
             }
             
-            return response_data
+            # 发送请求到默认服务
+            service_response = await send_request(default_service, default_params)
+            
+            # 处理响应或提供回退内容
+            if service_response.get("status") == "success":
+                return {
+                    "status": "success",
+                    "data": {
+                        "intent": "general",
+                        "target_service": default_service,
+                        "service_response": service_response.get("data", {})
+                    },
+                    "intent": "general"
+                }
+            else:
+                # 提供默认回退内容
+                return {
+                    "status": "error",
+                    "code": service_response.get("code", 500),
+                    "message": service_response.get("message", "服务处理失败"),
+                    "data": {
+                        "intent": "general",
+                        "target_service": default_service,
+                        "fallback_response": True,
+                        "content": "感谢您的提问。我们已收到您的问题，正在为您准备详细的回答。"
+                    }
+                }
     except Exception as e:
         logger.error(f"处理请求时发生错误: {str(e)}")
         # 避免直接向用户暴露内部错误信息
         return {
             "status": "error",
             "code": 500,
-            "message": "处理您的请求时发生错误，请稍后再试。"
+            "message": "处理您的请求时发生错误，请稍后再试。",
+            "data": {
+                "fallback_response": True,
+                "content": "感谢您的提问。我们暂时无法处理您的请求，请稍后再试。"
+            }
         }
 
 @router.get("/services")

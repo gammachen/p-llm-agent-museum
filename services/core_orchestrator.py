@@ -50,6 +50,13 @@ SERVICE_ROUTING = {
     "analytics": "/api/internal/analytics"
 }
 
+# 为测试目的添加的重定向路径，处理简单路径调用
+SIMPLE_PATH_REDIRECTS = {
+    "/booking": "/api/public/tour-booking/bookings",
+    "/hours": "/api/public/qa",
+    "/collections": "/api/internal/collection/list"
+}
+
 @router.post("/orchestrate")
 def orchestrate_request(request: RequestMessage) -> Dict[str, Any]:
     """核心协调服务，接收所有请求并路由给合适的专业服务"""

@@ -110,7 +110,7 @@ class QAAgent(ReActAgent):
         keywords = self._extract_keywords(user_message)
         if not keywords:
             # 如果没有关键词，获取所有展览信息
-            tool_response = execute_museum_service(endpoint="/api/public/qa/exhibitions")
+            tool_response = execute_museum_service(endpoint="/api/public/qa/exhibitions/search")
             result = tool_response.metadata
         else:
             # 否则搜索特定展览信息

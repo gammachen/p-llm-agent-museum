@@ -97,8 +97,7 @@ class CollectionManagementAgent(ReActAgent):
         
         # 调用服务获取藏品详情
         tool_response = execute_museum_service(
-            endpoint=f"/api/internal/collection/detail",
-            data={"collection_id": collection_id}
+            endpoint=f"/api/internal/collection/detail/{collection_id}"
         )
         result = tool_response.metadata
         
@@ -208,9 +207,18 @@ class CollectionManagementAgent(ReActAgent):
         # 这里是一个简单的ID提取示例
         # 在实际应用中，可以使用正则表达式或更复杂的NLP技术
         import re
-        match = re.search(r'COL\d+', text)
+        # 查找完整格式的藏品ID COL2025001
+        match = re.search(r'COL\d{7}', text)
         if match:
             return match.group(0)
+        # 如果没有找到完整格式，尝试查找COL开头的简短ID COL001
+        match = re.search(r'COL\d+', text)
+        if match:
+            col_id = match.group(0)
+            # 如果是COL001这样的格式，转换为数据文件中的格式COL2025001
+            if len(col_id) == 6 and col_id.startswith('COL'):
+                return f"COL2025{col_id[3:]}"
+            return col_id
         return ""
     
     def _extract_location(self, text: str) -> str:

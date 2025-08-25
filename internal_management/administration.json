@@ -1,0 +1,161 @@
+{
+  "approval_processes": {
+    "expense_reimbursements": [
+      {
+        "request_id": "ER20250825001",
+        "applicant": "张三",
+        "department": "游客服务部",
+        "amount": 1500,
+        "currency": "人民币",
+        "purpose": "购买办公用品",
+        "date": "2025-08-25",
+        "status": "已审批",
+        "approval_chain": [
+          {"approver": "李四", "position": "部门主管", "status": "已批准", "time": "2025-08-25T10:00:00Z", "comments": "同意报销"},
+          {"approver": "王五", "position": "财务经理", "status": "已批准", "time": "2025-08-25T11:30:00Z", "comments": "同意报销"}
+        ],
+        "attachments": ["/attachments/er20250825001_1.jpg", "/attachments/er20250825001_2.jpg"]
+      },
+      {
+        "request_id": "ER20250825002",
+        "applicant": "赵六",
+        "department": "安保部",
+        "amount": 3200,
+        "currency": "人民币",
+        "purpose": "购买安保设备",
+        "date": "2025-08-25",
+        "status": "审批中",
+        "approval_chain": [
+          {"approver": "钱七", "position": "部门主管", "status": "已批准", "time": "2025-08-25T10:30:00Z", "comments": "同意购买"},
+          {"approver": "王五", "position": "财务经理", "status": "待审批", "time": null, "comments": null}
+        ],
+        "attachments": ["/attachments/er20250825002_1.jpg"]
+      }
+    ],
+    "leave_requests": [
+      {
+        "request_id": "LR20250825001",
+        "applicant": "孙八",
+        "department": "藏品管理部",
+        "leave_type": "年假",
+        "start_date": "2025-09-01",
+        "end_date": "2025-09-05",
+        "days": 5,
+        "reason": "家庭旅游",
+        "status": "已批准",
+        "approval_chain": [
+          {"approver": "周九", "position": "部门主管", "status": "已批准", "time": "2025-08-25T09:30:00Z", "comments": "同意休假"}
+        ]
+      },
+      {
+        "request_id": "LR20250825002",
+        "applicant": "吴十",
+        "department": "设施管理部",
+        "leave_type": "病假",
+        "start_date": "2025-08-26",
+        "end_date": "2025-08-28",
+        "days": 3,
+        "reason": "感冒发烧",
+        "status": "已批准",
+        "approval_chain": [
+          {"approver": "郑十一", "position": "部门主管", "status": "已批准", "time": "2025-08-25T14:00:00Z", "comments": "同意休假，注意休息"}
+        ],
+        "attachments": ["/attachments/lr20250825002_1.jpg"]
+      }
+    ],
+    "purchase_requests": [
+      {
+        "request_id": "PR20250825001",
+        "applicant": "张三",
+        "department": "游客服务部",
+        "items": [
+          {"name": "打印机", "quantity": 2, "unit_price": 1500, "total_price": 3000},
+          {"name": "纸张", "quantity": 10, "unit_price": 50, "total_price": 500}
+        ],
+        "total_amount": 3500,
+        "purpose": "办公设备更新",
+        "date": "2025-08-25",
+        "status": "审批中",
+        "approval_chain": [
+          {"approver": "李四", "position": "部门主管", "status": "已批准", "time": "2025-08-25T10:15:00Z", "comments": "同意采购"},
+          {"approver": "王五", "position": "财务经理", "status": "待审批", "time": null, "comments": null},
+          {"approver": "刘十二", "position": "总经理", "status": "待审批", "time": null, "comments": null}
+        ]
+      }
+    ]
+  },
+  "meeting_management": {
+    "meetings": [
+      {
+        "meeting_id": "MT20250825001",
+        "title": "每周部门例会",
+        "organizer": "李四",
+        "department": "游客服务部",
+        "date": "2025-08-25",
+        "time": "14:00-15:00",
+        "location": "会议室A",
+        "participants": ["张三", "李四", "赵六", "钱七"],
+        "status": "已结束",
+        "agenda": ["上周工作总结", "本周工作安排", "游客反馈讨论"],
+        "minutes": "/documents/meetings/mt20250825001_minutes.pdf"
+      },
+      {
+        "meeting_id": "MT20250826001",
+        "title": "展览筹备会议",
+        "organizer": "孙八",
+        "department": "策展部",
+        "date": "2025-08-26",
+        "time": "10:00-11:30",
+        "location": "会议室B",
+        "participants": ["孙八", "周九", "吴十", "郑十一"],
+        "status": "已安排",
+        "agenda": ["古埃及特展筹备进度", "展品运输方案", "宣传计划"],
+        "minutes": null
+      }
+    ],
+    "meeting_rooms": [
+      {"room_id": "RM2025001", "name": "会议室A", "capacity": 10, "equipment": ["投影仪", "白板", "音响"], "status": "空闲"},
+      {"room_id": "RM2025002", "name": "会议室B", "capacity": 20, "equipment": ["投影仪", "白板", "音响", "视频会议设备"], "status": "已预订"},
+      {"room_id": "RM2025003", "name": "会议室C", "capacity": 5, "equipment": ["白板"], "status": "空闲"}
+    ]
+  },
+  "internal_knowledge_base": {
+    "categories": [
+      {"category_id": "KB2025001", "name": "规章制度", "description": "博物馆各项规章制度"},
+      {"category_id": "KB2025002", "name": "操作流程", "description": "各项工作的操作流程"},
+      {"category_id": "KB2025003", "name": "常见问题", "description": "工作中常见问题及解答"}
+    ],
+    "articles": [
+      {
+        "article_id": "ART2025001",
+        "title": "员工考勤制度",
+        "category_id": "KB2025001",
+        "author": "人力资源部",
+        "creation_date": "2025-01-10",
+        "last_update": "2025-01-10",
+        "content": "1. 工作时间：周一至周五 9:00-17:00；2. 打卡制度：每日上下班需打卡；3. 迟到早退规定：迟到早退15分钟以内扣半小时工资，超过15分钟扣1小时工资...",
+        "attachments": ["/documents/knowledge_base/art2025001_1.pdf"]
+      },
+      {
+        "article_id": "ART2025002",
+        "title": "展品入库流程",
+        "category_id": "KB2025002",
+        "author": "藏品管理部",
+        "creation_date": "2025-02-15",
+        "last_update": "2025-02-15",
+        "content": "1. 接收展品：检查展品数量和状况；2. 登记信息：录入藏品管理系统；3. 拍照存档：对展品进行多角度拍照；4. 入库：将展品放入指定库房...",
+        "attachments": ["/documents/knowledge_base/art2025002_1.pdf"]
+      },
+      {
+        "article_id": "ART2025003",
+        "title": "游客投诉处理流程",
+        "category_id": "KB2025003",
+        "author": "游客服务部",
+        "creation_date": "2025-03-20",
+        "last_update": "2025-03-20",
+        "content": "1. 接收投诉：记录投诉内容和游客信息；2. 分类处理：根据投诉内容分配给相关部门；3. 沟通反馈：与游客沟通处理结果；4. 跟进改进：对投诉问题进行跟进和改进...",
+        "attachments": []
+      }
+    ]
+  }
+}

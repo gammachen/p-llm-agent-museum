@@ -1,0 +1,55 @@
+{
+  "equipment_maintenance": {
+    "equipment": [
+      {"equipment_id": "EQ2025001", "name": "南馆空调系统", "type": "空调", "location": "南馆", "model": "ABC-123", "installation_date": "2020-05-15", "last_maintenance": "2025-07-20", "next_maintenance": "2025-10-20", "status": "正常", "maintenance_history": [
+        {"date": "2025-07-20", "action": "定期维护", "technician": "张师傅", "notes": "清洁过滤网，检查制冷剂压力"}
+      ]},
+      {"equipment_id": "EQ2025002", "name": "北馆照明系统", "type": "照明", "location": "北馆", "model": "XYZ-456", "installation_date": "2021-03-10", "last_maintenance": "2025-06-15", "next_maintenance": "2025-09-15", "status": "正常", "maintenance_history": [
+        {"date": "2025-06-15", "action": "定期维护", "technician": "李师傅", "notes": "更换部分老化灯泡，检查线路"}
+      ]},
+      {"equipment_id": "EQ2025003", "name": "展厅A空调", "type": "空调", "location": "展厅A", "model": "DEF-789", "installation_date": "2019-11-20", "last_maintenance": "2025-07-20", "next_maintenance": "2025-10-20", "status": "异常", "maintenance_history": [
+        {"date": "2025-07-20", "action": "定期维护", "technician": "张师傅", "notes": "清洁过滤网，检查制冷剂压力"}
+      ], "fault_description": "制冷效果不佳"}
+    ],
+    "maintenance_requests": [
+      {"request_id": "MR20250825001", "equipment_id": "EQ2025003", "equipment_name": "展厅A空调", "reporter": "王管理员", "report_time": "2025-08-25T14:00:00Z", "description": "展厅A空调制冷效果不佳，室内温度过高", "priority": "中", "status": "已派单", "assigned_technician": "张师傅", "expected_completion": "2025-08-26T12:00:00Z"},
+      {"request_id": "MR20250825002", "equipment_id": "EQ2025004", "equipment_name": "东馆电梯", "reporter": "赵游客", "report_time": "2025-08-25T15:30:00Z", "description": "东馆电梯运行时有异响", "priority": "高", "status": "处理中", "assigned_technician": "刘师傅", "expected_completion": "2025-08-25T18:00:00Z"}
+    ]
+  },
+  "energy_management": {
+    "consumption": {
+      "date": "2025-08-25",
+      "electricity": {"value": 1250, "unit": "kWh", "cost": 875, "compared_to_yesterday": -5.2},
+      "water": {"value": 35, "unit": "m³", "cost": 140, "compared_to_yesterday": 2.9},
+      "gas": {"value": 12, "unit": "m³", "cost": 48, "compared_to_yesterday": 0}
+    },
+    "zones": [
+      {"zone_id": "ZONE2025001", "name": "南馆", "electricity": 450, "water": 12, "gas": 5},
+      {"zone_id": "ZONE2025002", "name": "北馆", "electricity": 380, "water": 10, "gas": 4},
+      {"zone_id": "ZONE2025003", "name": "东馆", "electricity": 220, "water": 8, "gas": 2},
+      {"zone_id": "ZONE2025004", "name": "西馆", "electricity": 200, "water": 5, "gas": 1}
+    ],
+    "optimization_suggestions": [
+      {"suggestion_id": "SUG2025001", "description": "南馆展厅在非开放时间可适当降低空调温度", "potential_saving": "15%", "status": "未实施"},
+      {"suggestion_id": "SUG2025002", "description": "北馆照明系统可更换为LED灯，降低能耗", "potential_saving": "30%", "status": "计划中", "implementation_date": "2025-09-15"}
+    ]
+  },
+  "cleaning_management": {
+    "cleaning_tasks": [
+      {"task_id": "CT20250825001", "area": "南馆大厅", "type": "日常清洁", "scheduled_time": "2025-08-25T08:00:00Z", "completed_time": "2025-08-25T09:00:00Z", "cleaner": "王阿姨", "status": "已完成", "notes": "一切正常"},
+      {"task_id": "CT20250825002", "area": "北馆展厅", "type": "日常清洁", "scheduled_time": "2025-08-25T09:00:00Z", "completed_time": "2025-08-25T10:00:00Z", "cleaner": "李阿姨", "status": "已完成", "notes": "一切正常"},
+      {"task_id": "CT20250825003", "area": "展厅A", "type": "重点清洁", "scheduled_time": "2025-08-25T16:00:00Z", "completed_time": null, "cleaner": "张阿姨", "status": "未完成", "notes": null},
+      {"task_id": "CT20250825004", "area": "洗手间", "type": "日常清洁", "scheduled_time": "2025-08-25T10:00:00Z", "completed_time": "2025-08-25T10:30:00Z", "cleaner": "刘阿姨", "status": "已完成", "notes": "补充了洗手液和纸巾"}
+    ],
+    "supplies": [
+      {"supply_id": "SUPP2025001", "name": "洗手液", "category": "清洁用品", "quantity": 25, "unit": "瓶", "min_level": 10, "status": "充足"},
+      {"supply_id": "SUPP2025002", "name": "纸巾", "category": "清洁用品", "quantity": 15, "unit": "包", "min_level": 8, "status": "充足"},
+      {"supply_id": "SUPP2025003", "name": "清洁剂", "category": "清洁用品", "quantity": 8, "unit": "瓶", "min_level": 5, "status": "预警"}
+    ],
+    "inspections": [
+      {"inspection_id": "INS20250825001", "area": "南馆", "inspector": "周主管", "time": "2025-08-25T10:00:00Z", "rating": "良好", "notes": "清洁状况良好"},
+      {"inspection_id": "INS20250825002", "area": "北馆", "inspector": "周主管", "time": "2025-08-25T11:00:00Z", "rating": "良好", "notes": "清洁状况良好"},
+      {"inspection_id": "INS20250825003", "area": "展厅A", "inspector": "周主管", "time": "2025-08-25T15:00:00Z", "rating": "一般", "notes": "地面有少量污渍，已通知清洁人员处理"}
+    ]
+  }
+}

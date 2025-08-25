@@ -19,7 +19,7 @@ class MuseumAgentSystem:
         self.collection_management_agent = CollectionManagementAgent()
         
         # 启动博物馆服务（如果尚未启动）
-        print("正在检查博物馆服务状态...")
+        logger.info("正在检查博物馆服务状态...")
         self._check_service_status()
     
     def _check_service_status(self):
@@ -32,15 +32,15 @@ class MuseumAgentSystem:
                 result = result.metadata
             # 根路由返回结构不包含status字段，检查是否包含预期的字段
             if result.get("status") == "success" or ("message" in result and "endpoints" in result):
-                print("博物馆服务已成功启动！")
+                logger.info("博物馆服务已成功启动！")
             else:
-                print("警告：博物馆服务可能未正常启动。请确保已运行 './start_service.sh'")
+                logger.info("警告：博物馆服务可能未正常启动。请确保已运行 './start_service.sh'")
         except Exception as e:
-            print(f"错误：无法连接到博物馆服务。请先运行 './start_service.sh'\n错误信息: {str(e)}")
+            logger.info(f"错误：无法连接到博物馆服务。请先运行 './start_service.sh'\n错误信息: {str(e)}")
     
     async def test_orchestrator_agent(self):
         """测试核心协调智能体"""
-        print("\n=== 测试核心协调智能体 ===")
+        logger.info("\n=== 测试核心协调智能体 ===")
         
         # 测试用例
         test_cases = [
@@ -50,14 +50,14 @@ class MuseumAgentSystem:
         ]
         
         for i, test_case in enumerate(test_cases):
-            print(f"\n测试用例 {i+1}: {test_case}")
+            logger.info(f"\n测试用例 {i+1}: {test_case}")
             user_msg = Msg(name="user", role="user", content=test_case)
             response = await self.orchestrator.reply(user_msg)
-            print(f"OrchestratorAgent 响应: {response.content}")
+            logger.info(f"OrchestratorAgent 响应: {response.content}")
     
     async def test_tour_booking_agent(self):
         """测试导览与预约智能体"""
-        print("\n=== 测试导览与预约智能体 ===")
+        logger.info("\n=== 测试导览与预约智能体 ===")
         
         # 测试用例
         test_cases = [
@@ -68,14 +68,14 @@ class MuseumAgentSystem:
         ]
         
         for i, test_case in enumerate(test_cases):
-            print(f"\n测试用例 {i+1}: {test_case}")
+            logger.info(f"\n测试用例 {i+1}: {test_case}")
             user_msg = Msg(name="user", role="user", content=test_case)
             response = await self.tour_booking_agent.reply(user_msg)
-            print(f"TourBookingAgent 响应: {response.content}")
+            logger.info(f"TourBookingAgent 响应: {response.content}")
     
     async def test_qa_agent(self):
         """测试咨询问答智能体"""
-        print("\n=== 测试咨询问答智能体 ===")
+        logger.info("\n=== 测试咨询问答智能体 ===")
         
         # 测试用例
         test_cases = [
@@ -86,14 +86,14 @@ class MuseumAgentSystem:
         ]
         
         for i, test_case in enumerate(test_cases):
-            print(f"\n测试用例 {i+1}: {test_case}")
+            logger.info(f"\n测试用例 {i+1}: {test_case}")
             user_msg = Msg(name="user", role="user", content=test_case)
             response = await self.qa_agent.reply(user_msg)
-            print(f"QAAgent 响应: {response.content}")
+            logger.info(f"QAAgent 响应: {response.content}")
     
     async def test_collection_management_agent(self):
         """测试藏品管理智能体"""
-        print("\n=== 测试藏品管理智能体 ===")
+        logger.info("\n=== 测试藏品管理智能体 ===")
         
         # 测试用例
         test_cases = [
@@ -104,20 +104,20 @@ class MuseumAgentSystem:
         ]
         
         for i, test_case in enumerate(test_cases):
-            print(f"\n测试用例 {i+1}: {test_case}")
+            logger.info(f"\n测试用例 {i+1}: {test_case}")
             user_msg = Msg(name="user", role="user", content=test_case)
             response = await self.collection_management_agent.reply(user_msg)
-            print(f"CollectionManagementAgent 响应: {response.content}")
+            logger.info(f"CollectionManagementAgent 响应: {response.content}")
     
     async def interactive_demo(self):
         """交互式演示"""
-        print("\n=== 博物馆智能体系统交互式演示 ===")
-        print("输入'quit'退出演示\n")
+        logger.info("\n=== 博物馆智能体系统交互式演示 ===")
+        logger.info("输入'quit'退出演示\n")
         
         while True:
             user_input = input("您: ")
             if user_input.lower() == 'quit':
-                print("谢谢使用，再见！")
+                logger.info("谢谢使用，再见！")
                 break
             
             # 创建用户消息
@@ -125,7 +125,7 @@ class MuseumAgentSystem:
             
             # 发送给OrchestratorAgent
             response = await self.orchestrator.reply(user_msg)
-            print(f"智能助手: {response.content}")
+            logger.info(f"智能助手: {response.content}")
     
     async def run_all_tests(self):
         """运行所有测试"""
@@ -136,12 +136,12 @@ class MuseumAgentSystem:
         
         # 跳过交互式演示（在非交互式环境中运行会导致EOFError）
         # await self.interactive_demo()
-        print("\n所有自动测试已完成！")
+        logger.info("\n所有自动测试已完成！")
 
 async def main():
     """主函数"""
     # 显示欢迎信息
-    print("""
+    logger.info("""
     ============================================================
     博物馆智能体系统测试工具
     ============================================================
@@ -166,7 +166,7 @@ async def main():
 if __name__ == "__main__":
     # 检查Python版本
     if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 7):
-        print("错误：此程序需要Python 3.7或更高版本。")
+        logger.info("错误：此程序需要Python 3.7或更高版本。")
         sys.exit(1)
     
     # 检查是否在Windows环境下运行

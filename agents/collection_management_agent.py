@@ -13,6 +13,12 @@ from utils.agent_tools import (
 )
 from agentscope.message import Msg
 
+import logging
+
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 class CollectionManagementAgent(ReActAgent):
     """博物馆藏品管理智能体"""
     

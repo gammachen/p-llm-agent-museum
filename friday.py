@@ -102,7 +102,7 @@ def bubble_sort(arr):
 ```python
 test_array = [64, 34, 25, 12, 22, 11, 90]
 sorted_array = bubble_sort(test_array)
-print("Sorted array:", sorted_array)
+logger.info("Sorted array:", sorted_array)
 ```
 
 现在，我们可以通过调用`execute_python_code`函数来运行这段代码。请将此代码片段作为输入参数传递给该功能。

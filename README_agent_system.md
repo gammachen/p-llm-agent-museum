@@ -157,7 +157,7 @@ async def main():
     response = await orchestrator.reply(user_msg)
     
     # 打印响应
-    print(f"智能助手: {response.content}")
+    logger.info(f"智能助手: {response.content}")
 
 if __name__ == "__main__":
     asyncio.run(main())

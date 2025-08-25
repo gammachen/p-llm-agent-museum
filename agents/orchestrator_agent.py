@@ -17,6 +17,12 @@ from utils.agent_tools import (
     submit_museum_feedback
 )
 
+import logging
+
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 class OrchestratorAgent(ReActAgent):
     """博物馆智能体系统的核心协调智能体"""
     
@@ -173,7 +179,7 @@ class OrchestratorAgent(ReActAgent):
             intent = self.recognize_intent(message)
             
             # 2. 记录处理信息
-            print(f"[核心协调智能体] 收到请求 - 用户ID: {user_id}, 消息: {message}, 识别意图: {intent}")
+            logger.info(f"[核心协调智能体] 收到请求 - 用户ID: {user_id}, 消息: {message}, 识别意图: {intent}")
             
             # 3. 尝试找到对应的专业智能体
             agent = self.get_agent_by_intent(intent)
@@ -234,7 +240,7 @@ class OrchestratorAgent(ReActAgent):
                 }
         except Exception as e:
             # 处理异常情况
-            print(f"[核心协调智能体] 处理请求时发生错误: {str(e)}")
+            logger.info(f"[核心协调智能体] 处理请求时发生错误: {str(e)}")
             return {
                 "status": "error",
                 "code": 500,
@@ -247,7 +253,7 @@ async def main() -> None:
     orchestrator = OrchestratorAgent()
     user = UserAgent("Visitor")
     
-    print("博物馆智能体系统已启动！输入'exit'退出。")
+    logger.info("博物馆智能体系统已启动！输入'exit'退出。")
     
     msg = None
     while True:
@@ -260,12 +266,12 @@ async def main() -> None:
         
         # 显示结果
         if result["status"] == "success":
-            print(f"\n[系统响应] 意图: {result['intent']}, 处理方: {result['handled_by']}")
-            print(f"{result['response']}")
+            logger.info(f"\n[系统响应] 意图: {result['intent']}, 处理方: {result['handled_by']}")
+            logger.info(f"{result['response']}")
         else:
-            print(f"\n[错误] {result['message']}")
+            logger.info(f"\n[错误] {result['message']}")
         
-        print("\n请输入您的问题或需求:")
+        logger.info("\n请输入您的问题或需求:")
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -6,6 +6,11 @@ from agentscope.model import OllamaChatModel
 from agentscope.tool import Toolkit
 from utils.agent_tools import MuseumToolkit
 from agentscope.message import Msg
+import logging
+
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class TourBookingAgent(ReActAgent):
     """博物馆导览与预约智能体"""

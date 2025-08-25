@@ -19,10 +19,10 @@ def send_email(mail, subject, content):
     smtp_port = 587
     # 从当前的.env文件中获取邮件sender和密码
     sender_email = os.getenv("EMAIL_SENDER")
-    print(sender_email)
+    logger.info(sender_email)
     # sender_password = "jwvfkpttebjpbiif" # 邮箱应用密码
     sender_password = os.getenv("EMAIL_PASSWORD")
-    print(sender_password)
+    logger.info(sender_password)
     
     # 创建邮件对象
     msg = MIMEMultipart()

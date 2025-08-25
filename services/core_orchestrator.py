@@ -243,7 +243,7 @@ async def orchestrate_request(request: RequestMessage) -> Dict[str, Any]:
         # 4. 处理核心协调智能体返回的结果
         if agent_response.get("status") == "success":
             # 成功响应
-            logger.info(f"核心协调智能体处理成功，返回结果")
+            logger.info(f"核心协调智能体处理成功，返回结果 {agent_response.get('result', {})}")
             return {
                 "status": "success",
                 "data": {

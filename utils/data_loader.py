@@ -16,10 +16,10 @@ class DataLoader:
             with open(full_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except FileNotFoundError:
-            print(f"数据文件不存在: {full_path}")
+            logger.info(f"数据文件不存在: {full_path}")
             return {}
         except json.JSONDecodeError:
-            print(f"数据文件格式错误: {full_path}")
+            logger.info(f"数据文件格式错误: {full_path}")
             return {}
 
 # 为了方便各服务使用，创建一些常用的加载方法

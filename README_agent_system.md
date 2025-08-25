@@ -74,10 +74,32 @@
 
 ## 环境配置
 
-### 1. 安装依赖
+### 1. 切换到agentscope环境
+
+系统使用专门的agentscope conda环境，请首先切换到该环境：
+
+```bash
+conda activate agentscope
+```
+
+### 2. 安装项目依赖
 
 ```bash
 pip install -r requirements.txt
+
+conda run -n agentscope pip show pydantic
+
+(TraeAI-3) ~/Code/cursor-projects/p-llm-agent-museum [0] $ conda run -n agentscope pip show pydantic-settings
+Name: pydantic-settings
+Version: 2.10.1
+Summary: Settings management using Pydantic
+Home-page: https://github.com/pydantic/pydantic-settings
+Author: 
+Author-email: Samuel Colvin <s@muelcolvin.com>, Eric Jolibois <em.jolibois@gmail.com>, Hasan Ramezani <hasan.r67@gmail.com>
+License-Expression: MIT
+Location: /opt/anaconda3/envs/agentscope/lib/python3.11/site-packages
+Requires: pydantic, python-dotenv, typing-inspection
+Required-by: mcp
 ```
 
 ### 2. 配置Ollama服务

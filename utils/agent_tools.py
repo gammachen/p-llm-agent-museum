@@ -124,3 +124,54 @@ def ask_museum_question(question: str) -> Dict[str, Any]:
 def submit_museum_feedback(feedback_data: Dict[str, Any]) -> Dict[str, Any]:
     """提交博物馆游客反馈的工具函数"""
     return MuseumToolkit.submit_feedback(feedback_data)
+
+def search_collection_info(keywords: str) -> Dict[str, Any]:
+    """搜索博物馆藏品信息的工具函数"""
+    endpoint = f"/api/internal/collection/search?keywords={keywords}"
+    return MuseumToolkit.call_service(endpoint, method="GET")
+
+def search_exhibition_info(keywords: str) -> Dict[str, Any]:
+    """搜索博物馆展览信息的工具函数"""
+    endpoint = f"/api/public/qa/exhibitions/search?keywords={keywords}"
+    return MuseumToolkit.call_service(endpoint, method="GET")
+
+def get_collection_environment_data(location: str) -> Dict[str, Any]:
+    """获取藏品环境监测数据的工具函数"""
+    endpoint = f"/api/internal/collection/environment?location={location}"
+    return MuseumToolkit.call_service(endpoint, method="GET")
+
+def create_exhibition_loan_request(loan_data: Dict[str, Any]) -> Dict[str, Any]:
+    """创建借展申请的工具函数"""
+    endpoint = "/api/internal/collection/loan-request"
+    return MuseumToolkit.call_service(endpoint, method="POST", data=loan_data)
+
+# 在MuseumToolkit类中添加对应的静态方法
+def _add_missing_methods_to_toolkit():
+    """为MuseumToolkit类添加缺失的静态方法"""
+    
+    @staticmethod
+    def search_collection(keywords: str) -> Dict[str, Any]:
+        """搜索藏品信息"""
+        endpoint = f"/api/internal/collection/search?keywords={keywords}"
+        return MuseumToolkit.call_service(endpoint, method="GET")
+    
+    @staticmethod
+    def search_exhibition(keywords: str) -> Dict[str, Any]:
+        """搜索展览信息"""
+        endpoint = f"/api/public/qa/exhibitions/search?keywords={keywords}"
+        return MuseumToolkit.call_service(endpoint, method="GET")
+    
+    @staticmethod
+    def get_environment_data(location: str) -> Dict[str, Any]:
+        """获取环境监测数据"""
+        endpoint = f"/api/internal/collection/environment?location={location}"
+        return MuseumToolkit.call_service(endpoint, method="GET")
+    
+    @staticmethod
+    def create_loan_request(loan_data: Dict[str, Any]) -> Dict[str, Any]:
+        """创建借展申请"""
+        endpoint = "/api/internal/collection/loan-request"
+        return MuseumToolkit.call_service(endpoint, method="POST", data=loan_data)
+
+# 执行函数以添加缺失的方法
+_add_missing_methods_to_toolkit()

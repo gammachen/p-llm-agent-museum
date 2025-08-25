@@ -50,7 +50,7 @@ class QAAgent(ReActAgent):
     async def reply(self, x: Any = None, **kwargs) -> Msg:
         """处理用户的咨询问题"""
         if x is None:
-            return Msg(name=self.name, content="您好！我是博物馆的咨询助手，请问有什么可以帮助您的？")
+            return Msg(name=self.name, content="您好！我是博物馆的咨询助手，请问有什么可以帮助您的？", role="assistant")
         
         # 从输入中提取信息
         user_message = x.content if isinstance(x, Msg) else str(x)
@@ -72,10 +72,10 @@ class QAAgent(ReActAgent):
         
         # 将结果添加到记忆中
         self.memory.add(x)
-        self.memory.add(Msg(name=self.name, content=response))
+        self.memory.add(Msg(name=self.name, content=response, role="assistant"))
         
         # 返回响应
-        return Msg(name=self.name, content=response)
+        return Msg(name=self.name, content=response, role="assistant")
     
     async def _handle_collection_query(self, user_message: str) -> str:
         """处理关于藏品的查询"""

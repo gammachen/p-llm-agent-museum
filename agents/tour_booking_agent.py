@@ -35,7 +35,7 @@ class TourBookingAgent(ReActAgent):
     async def reply(self, x: Any = None, **kwargs) -> Msg:
         """处理用户的预约请求"""
         if x is None:
-            return Msg(name=self.name, content="您好！我是博物馆的导览与预约助手，请问有什么可以帮助您的？")
+            return Msg(name=self.name, content="您好！我是博物馆的导览与预约助手，请问有什么可以帮助您的？", role="assistant")
         
         # 从输入中提取信息
         user_message = x.content if isinstance(x, Msg) else str(x)
@@ -44,8 +44,8 @@ class TourBookingAgent(ReActAgent):
         # 分析用户意图
         # 确保每个Msg对象都使用正确的初始化方式（包含name、role和content属性）
         content = [
-            Msg(name="system", role="system", content="你是博物馆的导览与预约助手，负责处理门票预约、团队预约，并为用户生成个性化参观路线。"),
-            Msg(name=user_id, role="user", content=user_message)
+            Msg(name="system", content="你是博物馆的导览与预约助手，负责处理门票预约、团队预约，并为用户生成个性化参观路线。", role="system"),
+            Msg(name=user_id, content=user_message, role="user")
         ]
         
         # 使用模型理解用户意图
@@ -68,10 +68,10 @@ class TourBookingAgent(ReActAgent):
         
         # 将结果添加到记忆中
         self.memory.add(x)
-        self.memory.add(Msg(name=self.name, content=result))
+        self.memory.add(Msg(name=self.name, content=result, role="assistant"))
         
         # 返回响应
-        return Msg(name=self.name, content=result)
+        return Msg(name=self.name, content=result, role="assistant")
     
     async def _handle_booking(self, user_message: str, user_id: str) -> str:
         """处理预约请求"""

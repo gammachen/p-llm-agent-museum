@@ -104,7 +104,8 @@ class OrchestratorAgent(ReActAgent):
                     msg = Msg(
                         name=user_id,
                         content=message,
-                        role="user"
+                        role="user",
+                        content_blocks=[{"type": "text", "text": message}]
                     )
                     response = await agent(msg)
                     return {

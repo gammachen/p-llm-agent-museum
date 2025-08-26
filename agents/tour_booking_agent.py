@@ -19,9 +19,20 @@ class TourBookingAgent(ReActAgent):
         # 初始化工具集
         toolkit = Toolkit()
         # 注册MuseumToolkit的方法作为工具
-        toolkit.register_tool_function(MuseumToolkit.get_booking_info)
-        toolkit.register_tool_function(MuseumToolkit.create_booking)
-        toolkit.register_tool_function(MuseumToolkit.call_service)
+        toolkit.register_tool_function(
+            MuseumToolkit.get_booking_info,
+            func_description="获取用户预约信息。参数：phone（可选，字符串类型，用户手机号，用于精确查询特定用户的预约记录）"
+        )
+        toolkit.register_tool_function(
+            MuseumToolkit.create_booking,
+            func_description="创建新的参观预约。参数：booking_data（必填，字典类型，包含预约信息，必须包含visitor_name（游客姓名，字符串）、visitor_phone（游客手机号，字符串）、visit_date（参观日期，YYYY-MM-DD格式）、visit_time（参观时间段，字符串）、ticket_type（票种，字符串）、ticket_count（票数，整数）字段）"
+        )
+        toolkit.register_tool_function(
+            MuseumToolkit.call_service,
+            func_description="调用博物馆服务API。参数：endpoint（必填，字符串类型，API端点路径，如'/api/public/tour-booking/available-slots'）、method（可选，字符串类型，HTTP方法，支持'GET'或'POST'，默认为'GET'）、data（可选，字典类型，请求参数或请求体，GET请求时作为URL参数，POST请求时作为JSON请求体）"
+        )
+        # toolkit.register_tool_function(MuseumToolkit.get_visit_route, func_description="获取参观路线,参数为用户ID和参观时间")
+        # toolkit.register_tool_function(MuseumToolkit.get_visit_time, func_description="获取参观时间,参数为用户ID和参观日期")
         
         model = OllamaChatModel(
             model_name="qwen2:latest",

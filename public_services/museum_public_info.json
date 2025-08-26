@@ -1,0 +1,165 @@
+{
+  "staff": [
+    {
+      "staff_id": "ST001",
+      "name": "张明",
+      "position": "馆长",
+      "department": "馆务委员会",
+      "description": "毕业于北京大学考古系，拥有30年博物馆管理经验，曾主持多项大型展览策划。",
+      "contact_email": "director@museum.example.com",
+      "join_date": "2018-01-01"
+    },
+    {
+      "staff_id": "ST002",
+      "name": "李华",
+      "position": "副馆长",
+      "department": "馆务委员会",
+      "description": "专攻文物保护与修复，负责博物馆藏品的保存与维护工作。",
+      "contact_email": "deputy_director@museum.example.com",
+      "join_date": "2019-03-15"
+    },
+    {
+      "staff_id": "ST003",
+      "name": "王芳",
+      "position": "展览部主任",
+      "department": "展览部",
+      "description": "负责博物馆各类展览的策划、设计与实施，拥有丰富的策展经验。",
+      "contact_email": "exhibition@museum.example.com",
+      "join_date": "2020-05-20"
+    },
+    {
+      "staff_id": "ST004",
+      "name": "赵强",
+      "position": "教育推广部主任",
+      "department": "教育推广部",
+      "description": "负责博物馆的教育活动策划与公众推广工作，致力于提高博物馆的社会影响力。",
+      "contact_email": "education@museum.example.com",
+      "join_date": "2021-02-10"
+    },
+    {
+      "staff_id": "ST005",
+      "name": "陈静",
+      "position": "藏品部主任",
+      "department": "藏品部",
+      "description": "负责博物馆藏品的征集、登记、管理与研究工作。",
+      "contact_email": "collection@museum.example.com",
+      "join_date": "2017-08-05"
+    }
+  ],
+  "vendors": [
+    {
+      "vendor_id": "VD001",
+      "name": "文化艺术发展有限公司",
+      "service_type": "展览设计与搭建",
+      "description": "专业从事博物馆展览设计、制作与搭建的服务提供商，拥有丰富的行业经验。",
+      "contact_person": "林经理",
+      "contact_phone": "13800138001",
+      "cooperation_start_date": "2022-01-01"
+    },
+    {
+      "vendor_id": "VD002",
+      "name": "安保服务集团",
+      "service_type": "安全保卫",
+      "description": "为博物馆提供专业的安保服务，包括人员安保、监控系统维护等。",
+      "contact_person": "黄队长",
+      "contact_phone": "13800138002",
+      "cooperation_start_date": "2021-03-15"
+    },
+    {
+      "vendor_id": "VD003",
+      "name": "文物科技保护有限公司",
+      "service_type": "文物保护与修复",
+      "description": "专业从事文物保护与修复的技术服务公司，拥有多名资深文物修复专家。",
+      "contact_person": "张工程师",
+      "contact_phone": "13800138003",
+      "cooperation_start_date": "2020-07-01"
+    }
+  ],
+  "architecture": {
+    "building_types": [
+      {
+        "type_id": "BT001",
+        "type_name": "主体建筑",
+        "description": "博物馆的核心建筑，包含主要展厅、中央大厅等功能区域。",
+        "construction_year": "2005"
+      },
+      {
+        "type_id": "BT002",
+        "type_name": "南馆",
+        "description": "博物馆的南翼建筑，主要用于举办临时特展。",
+        "construction_year": "2010"
+      },
+      {
+        "type_id": "BT003",
+        "type_name": "北馆",
+        "description": "博物馆的北翼建筑，主要用于收藏和展示现代艺术品。",
+        "construction_year": "2015"
+      },
+      {
+        "type_id": "BT004",
+        "type_name": "教育中心",
+        "description": "专门用于开展教育活动和公众培训的建筑。",
+        "construction_year": "2018"
+      }
+    ],
+    "building_details": [
+      {
+        "building_id": "BD001",
+        "building_name": "主馆",
+        "building_type_id": "BT001",
+        "floor_count": 4,
+        "total_area": "25000平方米",
+        "architectural_style": "现代简约风格",
+        "main_features": ["大型中央大厅", "8个常设展厅", "多功能报告厅", "文物修复中心"],
+        "accessibility_features": ["无障碍坡道", "电梯", "盲道", "轮椅借用服务"]
+      },
+      {
+        "building_id": "BD002",
+        "building_name": "南馆",
+        "building_type_id": "BT002",
+        "floor_count": 3,
+        "total_area": "12000平方米",
+        "architectural_style": "后现代主义风格",
+        "main_features": ["3个特展厅", "互动体验区", "纪念品商店"],
+        "accessibility_features": ["无障碍坡道", "电梯", "盲道"]
+      },
+      {
+        "building_id": "BD003",
+        "building_name": "北馆",
+        "building_type_id": "BT003",
+        "floor_count": 3,
+        "total_area": "10000平方米",
+        "architectural_style": "工业风",
+        "main_features": ["现代艺术展厅", "多媒体互动区", "艺术家工作室"],
+        "accessibility_features": ["无障碍坡道", "电梯", "盲道"]
+      }
+    ]
+  },
+  "history": {
+    "establishment_year": "2005",
+    "development_milestones": [
+      {
+        "year": "2005",
+        "event": "博物馆正式开馆，首期展出文物1000余件"
+      },
+      {
+        "year": "2010",
+        "event": "南馆建成并投入使用，举办首个国际特展"
+      },
+      {
+        "year": "2015",
+        "event": "北馆建成并投入使用，现代艺术展区正式开放"
+      },
+      {
+        "year": "2020",
+        "event": "博物馆数字化工程启动，推出线上虚拟展厅"
+      },
+      {
+        "year": "2023",
+        "event": "博物馆建馆18周年庆典，举办'跨越时空的文明'大型特展"
+      }
+    ],
+    "mission": "致力于收藏、保护、研究和展示人类优秀文化遗产，促进文化交流与传播，提升公众文化素养。",
+    "vision": "成为国内一流、国际知名的现代化博物馆，为社会提供高质量的公共文化服务。"
+  }
+}

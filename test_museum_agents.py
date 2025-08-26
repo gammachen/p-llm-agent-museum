@@ -6,7 +6,6 @@ from agents.tour_booking_agent import TourBookingAgent
 from agents.qa_agent import QAAgent
 from agents.collection_management_agent import CollectionManagementAgent
 from agentscope.message import Msg
-from utils.agent_tools import execute_museum_service
 
 class MuseumAgentSystem:
     """博物馆智能体系统集成测试"""
@@ -26,7 +25,7 @@ class MuseumAgentSystem:
         """检查博物馆服务是否正常运行"""
         try:
             # 尝试调用一个简单的API来检查服务状态
-            result = execute_museum_service(endpoint="/")
+            result = specific_question_about_the_museum(endpoint="/")
             # 检查result是ToolResponse类型，需要获取其metadata属性
             if hasattr(result, 'metadata'):
                 result = result.metadata

@@ -5,7 +5,7 @@ from agentscope.memory import InMemoryMemory
 from agentscope.model import OllamaChatModel
 from agentscope.tool import Toolkit
 from utils.agent_tools import (
-    execute_museum_service,
+    specific_question_about_the_museum,
     search_collection_info,
     get_collection_environment_data,
     create_exhibition_loan_request,
@@ -25,11 +25,11 @@ class CollectionManagementAgent(ReActAgent):
     def __init__(self):
         # 初始化工具集
         toolkit = Toolkit()
-        toolkit.register_tool_function(execute_museum_service)
-        toolkit.register_tool_function(search_collection_info)
-        toolkit.register_tool_function(get_collection_environment_data)
-        toolkit.register_tool_function(create_exhibition_loan_request)
-        toolkit.register_tool_function(send_museum_email)
+
+        toolkit.register_tool_function(search_collection_info, func_description="搜索藏品信息\n参数说明：\n- keywords: 字符串类型，必填参数，搜索关键词，用于匹配藏品名称、描述等信息")
+        toolkit.register_tool_function(get_collection_environment_data, func_description="获取藏品环境监测数据\n参数说明：\n- location: 字符串类型，必填参数，监测位置，如展厅名称或位置标识")
+        toolkit.register_tool_function(create_exhibition_loan_request, func_description="创建借展申请\n参数说明：\n- loan_data: 字典类型，必填参数，借展申请数据\n  包含字段：exhibition_name(展览名称)、requesting_institution(申请机构)、contact_person(联系人)、\n            contact_phone(联系电话)、start_date(开始日期)、end_date(结束日期)、collection_ids(藏品ID列表)、\n            purpose(借展目的)")
+        toolkit.register_tool_function(send_museum_email, func_description="发送博物馆邮件通知\n参数说明：\n- recipient: 字符串类型，必填参数，收件人邮箱地址\n- subject: 字符串类型，必填参数，邮件主题\n- content: 字符串类型，必填参数，邮件内容")
         
         model = OllamaChatModel(
             model_name="qwen2:latest",
@@ -77,7 +77,7 @@ class CollectionManagementAgent(ReActAgent):
     async def _get_collection_list(self, user_message: str) -> str:
         """获取藏品列表"""
         # 调用服务获取藏品列表
-        tool_response = execute_museum_service(endpoint="/api/internal/collection/list")
+        tool_response = specific_question_about_the_museum(endpoint="/api/internal/collection/list")
         result = tool_response.metadata
         
         if result.get("status") == "success":
@@ -102,7 +102,7 @@ class CollectionManagementAgent(ReActAgent):
             return "请提供藏品的ID或名称，我可以为您查询详情。"
         
         # 调用服务获取藏品详情
-        tool_response = execute_museum_service(
+        tool_response = specific_question_about_the_museum(
             endpoint=f"/api/internal/collection/detail/{collection_id}"
         )
         result = tool_response.metadata

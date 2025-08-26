@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 import os
 from fastapi import APIRouter, HTTPException, Query
-from utils.data_loader import load_pre_visit_booking, load_pre_visit_information, load_on_visit_services, load_post_visit_services
+from utils.data_loader import load_pre_visit_booking, load_pre_visit_information, load_on_visit_services, load_post_visit_services, load_public_info
 
 router = APIRouter(prefix="/api/public", tags=["Public Services"])
 
@@ -73,7 +73,7 @@ def get_available_slots(date: Optional[str] = Query(None)):
 # 咨询问答服务
 @router.post("/qa")
 def ask_question(qa_request: QARequest):
-    """回答游客关于展品、历史等的问题"""
+    """回答游客关于展馆（开放时间等）、展品、历史等的问题"""
     # 在实际应用中，这里会调用知识库或LLM来生成回答
     # 为了演示，我们根据关键词返回预设的回答
     question = qa_request.question.lower()
@@ -95,6 +95,42 @@ def ask_question(qa_request: QARequest):
         answer = "感谢您的提问！我们正在为您查询相关信息，稍后将给您更详细的回复。"
     
     return {"status": "success", "question": qa_request.question, "answer": answer}
+
+@router.get("/qa/specific/museum/staff")
+def get_museum_staff():
+    """获取博物馆公开公众人物信息"""
+    # 从信息数据中获取公众人物信息
+    info_data = load_public_info()
+    staff = info_data.get("staff", [])
+    
+    return {"status": "success", "data": staff}
+
+@router.get("/qa/specific/museum/vendors")
+def get_museum_vendors():
+    """获取博物馆公开公众人物信息"""
+    # 从信息数据中获取公众人物信息
+    info_data = load_public_info()
+    vendors = info_data.get("vendors", [])
+    
+    return {"status": "success", "data": vendors}
+
+@router.get("/qa/specific/museum/architecture")
+def get_museum_architecture():
+    """获取博物馆公开架构信息"""
+    # 从信息数据中获取公众人物信息
+    info_data = load_public_info()
+    architecture = info_data.get("architecture", [])
+    
+    return {"status": "success", "data": architecture}
+
+@router.get("/qa/specific/museum/history")
+def get_museum_history():
+    """获取博物馆公开历史信息"""
+    # 从信息数据中获取公众人物信息
+    info_data = load_public_info()
+    history = info_data.get("history", [])
+    
+    return {"status": "success", "data": history}
 
 @router.get("/qa/exhibitions/search")
 def search_exhibitions(

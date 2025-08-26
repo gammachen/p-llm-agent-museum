@@ -1,3 +1,51 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+重构后的QAAgent测试文件
+"""
+
+import asyncio
+import logging
+
+from agents.qa_agent import QAAgent
+from agentscope.message import Msg
+
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+async def main():
+    """测试重构后的QAAgent"""
+    logger.info("开始测试重构后的QAAgent...")
+    
+    # 创建QAAgent实例
+    qa_agent = QAAgent()
+    
+    # 测试用例
+    test_cases = [
+        "博物馆的开放时间是什么时候？",
+        # "我想了解一下青铜鼎这件藏品的信息",
+        # "最近有什么特展吗？",
+        # "博物馆的票价是多少？",
+        # "如何前往博物馆？"
+    ]
+    
+    for i, question in enumerate(test_cases, 1):
+        logger.info(f"\n=== 测试用例 {i}: {question} ===")
+        
+        # 构造用户消息
+        user_msg = Msg(name="user", content=question, role="user")
+        
+        # 调用QAAgent处理
+        response = await qa_agent(user_msg)
+        
+        # 输出结果
+        logger.info(f"回答: {response.content}")
+    
+    logger.info("\n测试完成!")
+
+if __name__ == "__main__":
+    asyncio.run(main())
 import sys
 import asyncio
 import logging
@@ -22,9 +70,13 @@ async def test_qa_agent_refactored():
     # 创建测试消息
     test_messages = [
         Msg(name="user", content="你好，博物馆的开放时间是什么时候？", role="user"),  # 常见问题
-        Msg(name="user", content="当前有什么特别的展览吗？", role="user"),  # 展览查询
-        Msg(name="user", content="馆内有哪些珍贵的文物藏品？", role="user"),  # 藏品查询
-        Msg(name="user", content="请介绍一下博物馆的历史背景", role="user")  # 一般咨询
+        Msg(name="user", content="你好，博物馆的公众人物都有哪些？", role="user"),  # 常见问题
+        Msg(name="user", content="你好，博物馆的供应商都有哪些？", role="user"),  # 常见问题
+        Msg(name="user", content="你好，博物馆的建筑格局是什么样的？", role="user"),  # 常见问题
+        Msg(name="user", content="你好，博物馆的历史信息", role="user"),  # 常见问题
+        # Msg(name="user", content="当前有什么特别的展览吗？", role="user"),  # 展览查询
+        # Msg(name="user", content="馆内有哪些珍贵的文物藏品？", role="user"),  # 藏品查询
+        # Msg(name="user", content="请介绍一下博物馆的历史背景", role="user")  # 一般咨询
     ]
     
     # 测试1: 直接调用reply方法

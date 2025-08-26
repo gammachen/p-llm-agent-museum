@@ -22,6 +22,9 @@ class DataLoader:
             logger.info(f"数据文件格式错误: {full_path}")
             return {}
 
+def load_public_info() -> dict:
+    """加载展馆公开人物数据"""
+    return DataLoader.load_data("public_services/museum_public_info.json")
 # 为了方便各服务使用，创建一些常用的加载方法
 def load_pre_visit_booking() -> dict:
     """加载游客服务前的预约数据"""

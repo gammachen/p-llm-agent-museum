@@ -9,11 +9,11 @@ from agentscope.model import OllamaChatModel
 from agentscope.tool import Toolkit
 from agentscope.message import Msg
 from utils.agent_tools import (
-    execute_museum_service,
+    specific_question_about_the_museum,
     send_museum_email,
     get_museum_booking_info,
     create_museum_booking,
-    ask_museum_question,
+    general_question_about_the_museum,
     submit_museum_feedback
 )
 
@@ -36,12 +36,14 @@ class OrchestratorAgent(ReActAgent):
         
         # 初始化工具集
         toolkit = Toolkit()
-        toolkit.register_tool_function(execute_museum_service)
-        toolkit.register_tool_function(send_museum_email)
-        toolkit.register_tool_function(get_museum_booking_info)
-        toolkit.register_tool_function(create_museum_booking)
-        toolkit.register_tool_function(ask_museum_question)
-        toolkit.register_tool_function(submit_museum_feedback)
+        ## 这个协调中心的agent不需要使用工具函数，只需要路由请求到对应的智能体即可
+        
+        # toolkit.register_tool_function(general_question_about_the_museum)
+        # toolkit.register_tool_function(send_museum_email)
+        # toolkit.register_tool_function(get_museum_booking_info)
+        # toolkit.register_tool_function(create_museum_booking)
+        # toolkit.register_tool_function(ask_museum_question)
+        # toolkit.register_tool_function(submit_museum_feedback)
         
         # 设置智能体参数
         name = "OrchestratorAgent"
@@ -194,7 +196,7 @@ class OrchestratorAgent(ReActAgent):
         """路由请求到合适的智能体"""
         try:
             # 调用核心协调服务进行意图识别
-            result = execute_museum_service(
+            result = specific_question_about_the_museum(
                 endpoint="/api/core/orchestrate",
                 method="POST",
                 data={"user_id": user_id, "message": message}

@@ -1,3 +1,4 @@
+from pydoc import describe
 from typing import Dict, Any, Optional
 from agentscope.agent import ReActAgent
 from agentscope.formatter import OllamaChatFormatter
@@ -5,9 +6,14 @@ from agentscope.memory import InMemoryMemory
 from agentscope.model import OllamaChatModel
 from agentscope.tool import Toolkit
 from utils.agent_tools import (
-    execute_museum_service,
+    specific_question_about_the_museum,
     search_collection_info,
-    search_exhibition_info
+    search_exhibition_info,
+    general_question_about_the_museum,
+    get_museum_vendor,
+    get_museum_architecture,
+    get_museum_history,
+    get_museum_staff
 )
 from agentscope.message import Msg
 
@@ -31,16 +37,20 @@ class QAAgent(ReActAgent):
         # 初始化工具集
         logger.info("[咨询问答智能体] 注册工具函数...")
         toolkit = Toolkit()
-        toolkit.register_tool_function(execute_museum_service)
-        toolkit.register_tool_function(search_collection_info)
-        toolkit.register_tool_function(search_exhibition_info)
-        logger.info("[咨询问答智能体] 工具函数注册完成，共注册3个工具")
+        toolkit.register_tool_function(get_museum_vendor, func_description="获取博物馆公开供应商信息")
+        toolkit.register_tool_function(get_museum_architecture, func_description="获取博物馆公开建筑信息")
+        toolkit.register_tool_function(get_museum_history, func_description="获取博物馆公开历史信息")
+        toolkit.register_tool_function(get_museum_staff, func_description="获取博物馆公开公众人物信息")
+        toolkit.register_tool_function(general_question_about_the_museum, func_description="向博物馆咨询问题\n参数说明：\n- question: 字符串类型，必填参数，咨询问题")
+        toolkit.register_tool_function(search_collection_info, func_description="搜索藏品信息\n参数说明：\n- keywords: 字符串类型，必填参数，搜索关键词，用于匹配藏品名称、描述等信息")
+        toolkit.register_tool_function(search_exhibition_info, func_description="搜索展览信息\n参数说明：\n- keywords: 字符串类型，必填参数，搜索关键词，用于匹配展览名称、描述等信息")
+        logger.info("[咨询问答智能体] 工具函数注册完成，共注册7个工具")
         
         # 初始化模型
         logger.info("[咨询问答智能体] 初始化语言模型...")
         model = OllamaChatModel(
             model_name="qwen2:latest",
-            enable_thinking=True,  # 启用思考功能，支持ReAct模式
+            enable_thinking=False,  # qwen2:latest模型不支持thinking功能 ollama._types.ResponseError: registry.ollama.ai/library/glm4:latest does not support tools ollama._types.ResponseError: registry.ollama.ai/library/qwen2:latest does not support thinking (status code: 400)
             stream=True,
         )
         logger.info("[咨询问答智能体] 语言模型初始化完成 - 模型名称: qwen2:latest")
@@ -49,27 +59,28 @@ class QAAgent(ReActAgent):
         formatter = OllamaChatFormatter()
         memory = InMemoryMemory()
         name = "QAAgent"
-        sys_prompt = "你是博物馆的咨询助手，负责回答关于博物馆的各种问题，包括开放时间、票价、交通、展览、藏品等信息。\n"
-        sys_prompt += "请遵循推理-行动-反思的思考模式：\n"
-        sys_prompt += "1. 首先思考用户的问题属于哪种类型（常见问题、藏品查询、展览查询或其他）\n"
-        sys_prompt += "2. 如需使用工具，请在思考后选择合适的工具并提供参数\n"
-        sys_prompt += "3. 根据工具返回结果或已有知识生成最终回答"
+        sys_prompt = """你是博物馆的咨询助手，负责回答关于博物馆的各种问题，包括开放时间、票价、交通、展览、藏品等信息。
+
+请遵循以下思考模式：
+1. 首先思考用户的问题属于哪种类型
+2. 如需使用工具，请在思考后选择合适的工具并提供参数
+3. 根据工具返回结果或已有知识生成最终回答
+
+你可以使用以下工具：
+- search_collection_info: 搜索藏品信息，参数为关键词字符串
+- search_exhibition_info: 搜索展览信息，参数为关键词字符串
+
+对于常见问题，你可以直接回答，例如：
+- 开放时间：博物馆的开放时间为周二至周日 09:00-17:00（16:30停止入场），周一闭馆（法定节假日除外）。
+- 票价：成人票：60元/人，学生票：30元/人（凭有效学生证），老人票：30元/人（60岁以上凭有效证件），儿童票：20元/人（6-18岁），6岁以下儿童免费。
+- 交通：您可以乘坐地铁2号线在博物馆站下车，从B出口步行约5分钟即可到达。也可以乘坐公交101、102、103路在博物馆站下车。
+"""
         
         # 调用父类的初始化方法
         super().__init__(name=name, sys_prompt=sys_prompt, model=model, formatter=formatter, toolkit=toolkit, memory=memory)
         
-        # 常见问题的预设答案
-        logger.info("[咨询问答智能体] 加载常见问题预设答案...")
-        self.common_answers = {
-            "开放时间": "博物馆的开放时间为周二至周日 09:00-17:00（16:30停止入场），周一闭馆（法定节假日除外）。",
-            "票价": "成人票：60元/人，学生票：30元/人（凭有效学生证），老人票：30元/人（60岁以上凭有效证件），儿童票：20元/人（6-18岁），6岁以下儿童免费。",
-            "交通": "您可以乘坐地铁2号线在博物馆站下车，从B出口步行约5分钟即可到达。也可以乘坐公交101、102、103路在博物馆站下车。",
-            "停车": "博物馆地下停车场收费标准：小型车5元/小时，大型车10元/小时，当日单次停车最高收费50元。",
-            "讲解服务": "博物馆提供免费的定时讲解服务，时间为10:00、13:00、15:00。您也可以租用语音导览器，租金30元/台，押金200元。",
-            "寄存": "博物馆入口处提供免费寄存服务，贵重物品请自行保管。",
-            "餐饮": "博物馆内设有咖啡厅和餐厅，提供简餐和饮料。",
-            "摄影": "除特展外，博物馆内允许拍照，但禁止使用闪光灯和三脚架。"
-        }
+        # 常见问题的预设答案将由系统提示词处理，不再需要单独存储
+        logger.info("[咨询问答智能体] 初始化完成")
     
     def _reason(self, message: str) -> str:
         """实现推理过程，判断用户问题类型并决定是否使用工具
@@ -183,19 +194,19 @@ class QAAgent(ReActAgent):
             # 如果输入是字符串，转换为Msg对象
             x = Msg(name="user", content=x, role="user")
         
-        # 调用内部处理方法获取响应内容
-        response_content = await self._process_message(x, **kwargs)
+        # 调用父类的回复方法，让框架处理ReAct流程
+        response = await super().reply(x, **kwargs)
         
         # 将结果添加到记忆中（如果有输入消息）
         if x is not None:
             logger.debug("[咨询问答智能体] 更新记忆 - 添加用户请求和智能体响应")
             # 确保添加到记忆中的是Msg对象
             await self.memory.add(x)
-            await self.memory.add(Msg(name=self.name, content=response_content, role="assistant"))
+            await self.memory.add(response)
         
         # 返回符合框架要求的Msg对象
-        logger.info(f"[咨询问答智能体] 请求处理完成 - 响应内容长度: {len(response_content)} 字符")
-        return Msg(name=self.name, content=response_content, role="assistant")
+        logger.info(f"[咨询问答智能体] 请求处理完成 - 响应内容长度: {len(response.content) if response.content else 0} 字符")
+        return response
     
     async def __call__(self, x: Any = None, **kwargs) -> Msg:
         """实现__call__方法，作为框架调用智能体的标准入口
@@ -229,7 +240,7 @@ class QAAgent(ReActAgent):
             elif tool_name == "search_exhibition_info":
                 result = search_exhibition_info(*tool_args)
             elif tool_name == "execute_museum_service":
-                result = execute_museum_service(*tool_args)
+                result = specific_question_about_the_museum(*tool_args)
             else:
                 logger.error(f"[咨询问答智能体] 未知的工具名称: {tool_name}")
                 return None

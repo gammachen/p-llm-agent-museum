@@ -92,10 +92,12 @@ class QAAgent(ReActAgent):
         if any(keyword in message for keyword in ["藏品", "文物", "艺术品", "展品"]):
             logger.info("[咨询问答智能体] 推理结果: 识别为藏品相关查询，需要使用search_collection_info工具")
             keywords = self._extract_keywords(message)
+            
             return f"用户问题涉及藏品信息，需要使用search_collection_info工具查询。关键词：{keywords}"
         elif any(keyword in message for keyword in ["展览", "特展", "主题展"]):
             logger.info("[咨询问答智能体] 推理结果: 识别为展览相关查询，需要使用search_exhibition_info工具")
             keywords = self._extract_keywords(message)
+            
             return f"用户问题涉及展览信息，需要使用search_exhibition_info工具查询。关键词：{keywords}"
         else:
             logger.info("[咨询问答智能体] 推理结果: 识别为一般咨询问题，可直接回答")
@@ -139,14 +141,19 @@ class QAAgent(ReActAgent):
                 # 使用工具搜索藏品信息
                 keywords = self._extract_keywords(user_message)
                 logger.info(f"[咨询问答智能体] ReAct行动 - 调用search_collection_info工具，关键词: {keywords}")
+                
                 tool_response = await self._call_tool("search_collection_info", [keywords])
+                
                 logger.info(f"[咨询问答智能体] ReAct反思 - 工具返回结果，处理藏品信息")
+                
                 return self._format_collection_response(tool_response)
             elif "search_exhibition_info" in thought:
                 # 使用工具搜索展览信息
                 keywords = self._extract_keywords(user_message)
                 logger.info(f"[咨询问答智能体] ReAct行动 - 调用search_exhibition_info工具，关键词: {keywords}")
+                
                 tool_response = await self._call_tool("search_exhibition_info", [keywords])
+                
                 logger.info(f"[咨询问答智能体] ReAct反思 - 工具返回结果，处理展览信息")
                 return self._format_exhibition_response(tool_response)
             else:

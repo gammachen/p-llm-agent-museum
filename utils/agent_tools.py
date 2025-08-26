@@ -147,7 +147,7 @@ class MuseumToolkit:
     def get_museum_staff() -> Dict[str, Any]:
         """获取博物馆公开人物信息"""
         logger.info(f"开始获取博物馆公开人物信息")
-        endpoint = f"/qa/specific/museum/staff"
+        endpoint = f"/api/public/qa/specific/museum/staff"
         result = MuseumToolkit.call_service(endpoint, method="GET")
         logger.info(f"获取博物馆公开人物信息: 结果状态={result.get('status', 'success')}")
         return result
@@ -156,7 +156,7 @@ class MuseumToolkit:
     def get_museum_vendor() -> Dict[str, Any]:
         """获取博物馆公开供应商信息"""
         logger.info(f"开始获取博物馆公开供应商信息")
-        endpoint = f"/qa/specific/museum/vendor"
+        endpoint = f"/api/public/qa/specific/museum/vendors"
         result = MuseumToolkit.call_service(endpoint, method="GET")
         logger.info(f"获取博物馆公开供应商信息: 结果状态={result.get('status', 'success')}")
         return result
@@ -165,7 +165,7 @@ class MuseumToolkit:
     def get_museum_architecture() -> Dict[str, Any]:
         """获取博物馆公开建筑信息"""
         logger.info(f"开始获取博物馆公开建筑信息")
-        endpoint = f"/qa/specific/museum/architecture"
+        endpoint = f"/api/public/qa/specific/museum/architecture"
         result = MuseumToolkit.call_service(endpoint, method="GET")
         logger.info(f"获取博物馆公开建筑信息: 结果状态={result.get('status', 'success')}")
         return result
@@ -174,7 +174,7 @@ class MuseumToolkit:
     def get_museum_history() -> Dict[str, Any]:
         """获取博物馆公开历史信息"""
         logger.info(f"开始获取博物馆公开历史信息")
-        endpoint = f"/qa/specific/museum/history"
+        endpoint = f"/api/public/qa/specific/museum/history"
         result = MuseumToolkit.call_service(endpoint, method="GET")
         logger.info(f"获取博物馆公开历史信息: 结果状态={result.get('status', 'success')}")
         return result
